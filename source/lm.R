@@ -1,8 +1,13 @@
 #todo:
-#D-select features based on correlation plot: OverallQual, GrLivArea, GarageArea
-#D-plot learning curve
+#D-Read: https://www.kaggle.com/skirmer/house-prices-advanced-regression-techniques/fun-with-real-estate-data/discussion
+#D-Read: https://www.kaggle.com/notaapple/house-prices-advanced-regression-techniques/detailed-exploratory-data-analysis-using-r/discussion
 #D-make simple submission: lm_initial: Trn/CV errors=0.403522/0.7154108, Train error=0.4576414, Score=0.26634
-#-handle negative values better
+#-Use 1 feature (GrLivArea): lm_GrLivArea: 0.2760749/0.2736812, 0.2755768, 0.28918
+#-Print the other thing that shows significance of variable
+#-Group OverallQual into low(1-4), med(5-7), high(8-10)
+#-Experiment with more features
+#-Read more forum posts
+#-handle negative values better somehow
 #-make new features from the interaction b/n highly-correlated features (eg. train$year_qual = train$YearBuilt*train$OverallQual)
 
 
@@ -11,21 +16,32 @@ rm(list = ls())
 setwd('/Users/dan/Desktop/Kaggle/Housing')
 
 library(caret) #createDataPartition
-library(ggplot2) #visualization
-library(ggthemes) # visualization
-library(corrplot) #cor, cor rplot
-library(car) #scatterplot
 library(hydroGOF) #rmse
+source('source/_plot.R')
 
 
 #============== Functions ===============
 
-createLm = function(data) {
+createModel = function(data) {
   set.seed(754)
-  return(lm(SalePrice ~ OverallQual + GrLivArea + GarageArea, data=data))
+  return(lm(SalePrice ~
+              # OverallQual + #0.79098160
+              # GarageCars + #0.64040920 #highly correlated with GarageArea
+              # GarageArea + #0.62343144
+              # TotalBsmtSF + #0.61358055 #highly correlated with X1stFlrSF
+              # X1stFlrSF + #0.60585218
+              # FullBath + #0.56066376
+              # TotRmsAbvGrd + #0.53372316
+              # YearBuilt + #0.52289733
+              # YearRemodAdd + #0.50710097
+              # MasVnrArea + #0.47261450
+              # GarageYrBlt + #0.46905608
+              # Fireplaces + #0.46692884
+              GrLivArea, #0.70862448 #keep this one last since I know it will be in there
+            data=data))
 }
 
-createPrediction = function(model, newData, verbose=T) {
+createPrediction = function(model, newData, verbose=F) {
   prediction = predict(model, newData, type='response')
   minY = min(prediction)
   if (minY <= 0) {
@@ -38,103 +54,34 @@ createPrediction = function(model, newData, verbose=T) {
   return(prediction)
 }
 
-getError = function(y, yhat) {
+computeError = function(y, yhat) {
   return(rmse(log(y), log(yhat)))
 }
-
-plotLearningCurve = function(data, save=FALSE) {
-  cat('Plotting learning curve...\n')
-
-  #split data into train and cv
-  set.seed(837)
-  partitionIndex = createDataPartition(data$SalePrice, p=0.8, list=FALSE)
-  trn = data[partitionIndex,]
-  cv = data[-partitionIndex,]
-
-  incrementSize = 5
-  increments = seq(incrementSize, nrow(trn), incrementSize)
-  numIterations = length(increments)
-  trnErrors = numeric(numIterations)
-  cvErrors = numeric(numIterations)
-
-  count = 1
-  for (i in increments) {
-    if (i %% 100 == 0) cat('    On training example ', i, '\n', sep='')
-    trnSubset = trn[1:i,]
-    model = createLm(trnSubset)
-    trnErrors[count] = getError(trnSubset$SalePrice, createPrediction(model, trnSubset, verbose=F))
-    cvErrors[count] = getError(cv$SalePrice, createPrediction(model, cv, verbose=F))
-
-    count = count + 1
-  }
-
-  #print final trn and cv errors
-  model = createLm(trn)
-  cat('    Final Train/CV Error=', getError(trn$SalePrice, createPrediction(model, trn, verbose=F)), '/', getError(cv$SalePrice, createPrediction(model, cv, verbose=F)), '\n', sep='')
-
-  if (save) png(paste0('LearningCurve_', FILENAME, '.png'), width=500, height=350)
-  plot(increments, trnErrors, col='blue', type='l', ylim = c(0, max(cvErrors)), main='Learning Curve', xlab = "Number of Training Examples", ylab = "Error")
-  lines(increments, cvErrors, col='red')
-  legend('topright', legend=c('train', 'cv'), fill=c('blue', 'red'), inset=.02, text.width=100)
-  if (save) dev.off()
-}
-
-plotCorrelations = function(data) {
-  correlations = cor(data[,names(Filter(is.numeric, data))])
-  corrplot(correlations, method="circle", type="lower",  sig.level = 0.01, insig = "blank")
-}
-
-#I'm not sure what to use this for, but I've seen several other people
-#use it, so maybe it'll come in handy in the future
-plotScatterplotMatrix = function(data) {
-  pairs(~YearBuilt+OverallQual+TotalBsmtSF+GrLivArea,
-        data=data,
-        main="Scatterplot Matrix")
-}
-
-plotScatterplot = function(data) {
-  scatterplot(SalePrice ~ GrLivArea,
-              data=data,
-              #grid=FALSE,
-              ylab="Sale Price")
-}
-
-
 
 #============= Main ================
 
 #Globals
-FILENAME = 'lm_initial'
+FILENAME = 'lm_GrLivArea'
 PROD_RUN = T
+Y_NAME = 'SalePrice'
 
 source('source/_getData.R')
-data = getData()
+data = getData(Y_NAME)
 train = data$train
 test = data$test
 
-#plot correlations
-#plotCorrelations(train)
-
-#plot scatterplot matrix
-#plotScatterplotMatrix(train)
-
-#plot scatterplot
-#plotScatterplot(train)
-
 #plot learning curve
-plotLearningCurve(train, save=PROD_RUN)
-
+plotLearningCurve(train, Y_NAME, createModel, createPrediction, computeError, save=PROD_RUN)
 
 cat('Creating Linear Model...\n')
-model = createLm(train)
+model = createModel(train)
 cat('Getting train error...\n')
-cat('    Train Error=', getError(train$SalePrice, createPrediction(model, train)), '\n', sep='')
-
+cat('    Train Error=', computeError(train$SalePrice, createPrediction(model, train, verbose=T)), '\n', sep='')
 
 if (PROD_RUN) {
   #Output solution
   cat('Creating test prediction...\n')
-  prediction = createPrediction(model, test)
+  prediction = createPrediction(model, test, verbose=T)
   solution = data.frame(Id = test$Id, SalePrice = prediction)
   outputFilename = paste0(FILENAME, '.csv')
   cat('Writing solution to file: ', outputFilename, '...\n', sep='')

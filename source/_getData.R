@@ -1,10 +1,15 @@
 #todo:
-#D-impute missing values
+#D-fill NAs using roughfix
+#-Change NAs to -1s for GarageYrBlt before roughfix b/c the NAs represent no garage
+#-combine rare values in all factor cols
 #-try making quality cols factors instead of ints (OverallQual, OverallCond)
 #-convert cols that have qualities as strings (eg. "Ex"/"Gd"/"TA"/"Fa"/"Po") to ints
-#-convert GarageYrBlt from factor to int (which means converting the NAs to ints somehow)
+
 
 setwd('/Users/dan/Desktop/Kaggle/Housing')
+
+library(dplyr) #bind_rows
+library(randomForest) #na.roughfix
 
 #cols=Id,MSSubClass,MSZoning,LotFrontage,LotArea,Street,Alley,LotShape,
 #     LandContour,Utilities,LotConfig,LandSlope,Neighborhood,Condition1,
@@ -20,7 +25,6 @@ setwd('/Users/dan/Desktop/Kaggle/Housing')
 #     ScreenPorch,PoolArea,PoolQC,Fence,MiscFeature,MiscVal,MoSold,YrSold,
 #     SaleType,SaleCondition,SalePrice
 
-TARGET_COL = 'SalePrice'
 FACTOR_COLS = c('MSSubClass', 'MSZoning', 'Street', 'Alley', 'LotShape',
                 'LandContour', 'Utilities', 'LotConfig', 'LandSlope',
                 'Neighborhood', 'Condition1', 'Condition2', 'BldgType',
@@ -31,33 +35,47 @@ FACTOR_COLS = c('MSSubClass', 'MSZoning', 'Street', 'Alley', 'LotShape',
                 'HeatingQC', 'CentralAir', 'Electrical', 'KitchenQual',
                 'Functional', 'FireplaceQu', 'GarageType', 'GarageFinish',
                 'GarageQual', 'GarageCond', 'PavedDrive', 'PoolQC', 'Fence',
-                'GarageYrBlt', #make GarageYrBlt a factor because there are NAs
                 'MiscFeature', 'SaleType', 'SaleCondition' )
-questionableFactorCols = c('YearBuilt', 'BsmtFullBath', 'BsmtHalfBath',
-    'FullBath', 'HalfBath', 'BedroomAbvGr', 'KitchenAbvGr', 'TotRmsAbvGrd',
-    'Fireplaces')
 
 imputeMissingValues = function(data) {
   cat('Imputing missing values...\n')
+
   #to investigate:
-    #D-LotFrontage: should be numbers, but has 259 NAs - use mice
-    #D-MasVnrArea: should be numbers, but has 8 NAs - remove the NA rows
-    #D-MasVnrType: should be factor without 'NA', but has 8 'NA's (the number of NAs is the same as the number of NAs in MasVnrArea) - remove the NA rows
-    #D-Electrical: should be factor without 'NA', but has 1 'NA' - leave it be since it probably indicates weird electrical issue with the house
-    #D-GarageYrBlt: should be numbers, but has 81 NAs - the NAs mean there is no garage, so leave it be as is
+    #-LotFrontage: should be numbers, but has 259 NAs in train, 227 NAs in test
+    #-MasVnrArea: should be numbers, but has 8 NAs in train, 15 NAs in test
+    #-MasVnrType: should be factor without 'NA', but has 8 'NA's (the number of NAs is the same as the number of NAs in MasVnrArea)
+    #-Electrical: should be factor without 'NA', but has 1 'NA' - leave it be since it probably indicates weird electrical issue with the house
+    #-BsmtFinSF1: should be numbers, but has 1 NA in test
+    #-BsmtFinSF2: should be numbers, but has 1 NA in test
+    #-TotalBsmtSF: should be numbers, but has 1 NA in test
+    #-BsmtFullBath: should be numbers, but has 2 NAs in test
+    #-BsmtHalfBath: should be numbers, but has 2 NAs in test
+    #-GarageYrBlt: should be numbers, but has 81 NAs in train, 78 NAs in test - the NAs mean there is no garage
+    #-GarageCars: should be numbers, but has 1 NA in test
+    #-GarageArea: should be numbers, but has 1 NA in test
 
-  #Fill LotFrontage using mice
-  data$LotFrontage = suppressWarnings(as.integer(data$LotFrontage)) #convert to integer, which also converts the 'NA' strings to NAs
-  require(mice)
-  set.seed(129)
-  mice_imp = mice(data[, c('MSZoning', 'LotFrontage', 'LotArea', 'Street', 'Alley', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'BldgType', 'HouseStyle')],
-      printFlag = F)
-  mice_output = complete(mice_imp)
-  data$LotFrontage = mice_output$LotFrontage
+  #use roughfix to impute missing values
+  data = na.roughfix(data)
 
-  #Remove rows that have NA for MasVnrArea and MasVnrType (they're the same 8 rows)
-  data$MasVnrArea = suppressWarnings(as.integer(data$MasVnrArea)) #convert to integer, which also converts the 'NA' strings to NAs
-  data = data[-data[is.na(data$MasVnrArea), 'Id'],]
+  # #Fill LotFrontage using mice
+  # data$LotFrontage = suppressWarnings(as.integer(data$LotFrontage)) #convert to integer, which also converts the 'NA' strings to NAs
+  # require(mice)
+  # set.seed(129)
+  # mice_imp = mice(data[, c('MSZoning', 'LotFrontage', 'LotArea', 'Street', 'Alley', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'BldgType', 'HouseStyle')],
+  #     printFlag = F)
+  # mice_output = complete(mice_imp)
+  # data$LotFrontage = mice_output$LotFrontage
+  #
+  # #Replace NAs with -1s in GarageYrBlt
+  # data$GarageYrBlt = suppressWarnings(as.integer(data$GarageYrBlt))
+  # #Note: using '-1L' instead of '-1' keeps data$GarageYrBlt as class 'integer'
+  # #instead of class 'numeric'.  I'm not sure if this is important but all other cols
+  # #are of class 'integer', so I'm doing this to keep them all the same.
+  # data[is.na(data$GarageYrBlt), 'GarageYrBlt'] = -1L
+  #
+  # #Remove rows that have NA for MasVnrArea and MasVnrType (they're the same 8 rows)
+  # data$MasVnrArea = suppressWarnings(as.integer(data$MasVnrArea)) #convert to integer, which also converts the 'NA' strings to NAs
+  # data = data[-data[is.na(data$MasVnrArea), 'Id'],]
 
   return(data)
 }
@@ -66,18 +84,28 @@ featureEngineer = function(data) {
   return(data)
 }
 
-getData = function() {
-  #read data from file
-  train = read.csv('data/train.csv', stringsAsFactors=F, na.strings=c(''))
-  test = read.csv('data/test.csv', stringsAsFactors=F, na.strings=c(''))
+getData = function(yName) {
+  #read data from file as character
+  train = read.csv('data/train.csv', stringsAsFactors=F, na.strings=c(''), colClasses='character')
+  test = read.csv('data/test.csv', stringsAsFactors=F, na.strings=c(''), colClasses='character')
+  full = bind_rows(train, test)
 
   #manually create factors
   for (col in FACTOR_COLS) {
-    train[, col] = factor(train[, col])
+    full[, col] = factor(full[, col])
   }
 
-  #do feature engineering
-  train = imputeMissingValues(train)
+  #convert the rest to numeric
+  for (col in names(full[, !names(full) %in% FACTOR_COLS])) {
+    full[, col] = suppressWarnings(as.integer(full[, col]))
+  }
+
+  #impute missing values
+  full = imputeMissingValues(full)
+
+  #split the data back into train and test
+  train = full[1:nrow(train),]
+  test = full[(nrow(train)+1):nrow(full), names(full) != yName]
 
   return(list(train=train, test=test))
 }

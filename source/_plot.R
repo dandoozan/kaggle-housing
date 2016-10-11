@@ -3,7 +3,7 @@
 
 #Plot learning curve
 #E.g. plotLearningCurve(train, 'SalePrice', createModel, createPrediction, computeError, save=PROD_RUN)
-plotLearningCurve = function(data, y, createModel, createPrediction, computeError, ylim=NULL, save=FALSE) {
+plotLearningCurve = function(data, y, createModel, createPrediction, computeError, increment=5, startIndex=increment, ylim=NULL, save=FALSE) {
   cat('Plotting learning curve...\n')
 
   #split data into train and cv
@@ -12,8 +12,7 @@ plotLearningCurve = function(data, y, createModel, createPrediction, computeErro
   train = data[partitionIndices,]
   cv = data[-partitionIndices,]
 
-  incrementSize = 5
-  increments = seq(incrementSize, nrow(train), incrementSize)
+  increments = seq(startIndex, nrow(train), increment)
   numIterations = length(increments)
   trainErrors = numeric(numIterations)
   cvErrors = numeric(numIterations)
@@ -23,6 +22,10 @@ plotLearningCurve = function(data, y, createModel, createPrediction, computeErro
   for (i in increments) {
     if (i %% 100 == 0) cat('    On training example ', i, '\n', sep='')
     trainSubset = train[1:i,]
+
+    #tbx
+    #print(names(Filter(function(x) (is.factor(x) && length(levels(x)) < 2), trainSubset)))
+
     model = createModel(trainSubset)
     trainErrors[count] = computeError(trainSubset[[y]], createPrediction(model, trainSubset))
 
@@ -57,26 +60,35 @@ plotLearningCurve = function(data, y, createModel, createPrediction, computeErro
 #This will plot a histogram of all the cols in data, so be careful
 #to pass in data that only contains the columns you want plotted
 #Note: All cols must be factors, and the number of cols should be <= 8
-#E.g. plotAllHistograms(Filter(is.factor, train)[, 3:6])
-#E.g. plotAllHistograms(Filter(is.factor, train)[, 1:9], 3)
-plotAllHistograms = function(data, ncol=2) {
-  maxCols = 9
-  numCols = ncol(data)
-  numFactorCols = ncol(Filter(is.factor, data))
+#E.g. plotTrainAndTestHistograms(Filter(is.factor, train), Filter(is.factor, test))
+#E.g. plotTrainAndTestHistograms(Filter(is.factor, train), Filter(is.factor, test), 5)
+#E.g. plotTrainAndTestHistograms(Filter(is.factor, train), Filter(is.factor, test), 10, 1)
+plotTrainAndTestHistograms = function(trainData, testData, startIndex=1, numColsToPlot=4, numGridCols=2) {
+  numCols = ncol(trainData)
+  numTestCols = ncol(testData)
 
   #error checking
-  if (numCols != numFactorCols) stop('Data contains non-factor columns.  All columns must be factors.')
-  if (numCols > maxCols) stop(paste('Data has', numCols, 'columns.  It should have <=', maxCols, 'columns'))
+  if (numCols != numTestCols) stop(paste('Train and test data have a different number of columns (test has', numCols, 'columns, test has', numTestCols, 'columns). They must be the same.'))
+  if (numCols != ncol(Filter(is.factor, trainData))) stop('Train contains non-factor columns.  All columns must be factors.')
+  if (numCols != ncol(Filter(is.factor, testData))) stop('Test contains non-factor columns.  All columns must be factors.')
 
   require(gridExtra) #grid.arrange
   plots = list()
-  for (i in 1:numCols) {
-    df = data.frame(x=data[[i]])
-    plot = ggplot(data=df, aes(x=factor(x))) + stat_count() + xlab(colnames(data)[i]) + theme_light() +
+  endIndex = startIndex + numColsToPlot - 1
+  for (i in startIndex:endIndex) {
+    #add train plot
+    trainDf = data.frame(x=trainData[[i]])
+    trainPlot = ggplot(data=trainDf, aes(x=factor(x))) + stat_count() + xlab(colnames(trainData)[i]) + theme_light() +
       theme(axis.text.x = element_text(angle = 90, hjust =1))
-    plots = c(plots, list(plot))
+
+    #add test plot
+    testDf = data.frame(x=testData[[i]])
+    testPlot = ggplot(data=testDf, aes(x=factor(x))) + stat_count() + xlab(colnames(testData)[i]) + theme_light() +
+      theme(axis.text.x = element_text(angle = 90, hjust =1))
+    plots = c(plots, list(trainPlot, testPlot))
   }
-  do.call('grid.arrange', c(plots, ncol=ncol))
+
+  do.call('grid.arrange', c(plots, ncol=numGridCols))
 }
 
 #Plot the correlations between all numeric cols in data

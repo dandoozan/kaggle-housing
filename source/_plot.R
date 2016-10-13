@@ -7,10 +7,9 @@ plotLearningCurve = function(data, y, createModel, createPrediction, computeErro
   cat('Plotting learning curve...\n')
 
   #split data into train and cv
-  set.seed(837)
-  partitionIndices = createDataPartition(data[[y]], p=0.8, list=FALSE)
-  train = data[partitionIndices,]
-  cv = data[-partitionIndices,]
+  split = splitData(data, y)
+  train = split$train
+  cv = split$cv
 
   increments = seq(startIndex, nrow(train), increment)
   numIterations = length(increments)
@@ -31,17 +30,13 @@ plotLearningCurve = function(data, y, createModel, createPrediction, computeErro
     cvErrors[count] = computeError(cv[[y]], createPrediction(model, cv))
 
     #tbx
-    if (cvErrors[count] > 0.5 && !found) {
-      cat('i=', i, ', count=', count, 'error=', cvErrors[count], '\n')
-      found = T
-    }
+    # if (cvErrors[count] > 0.5 && !found) {
+    #   cat('i=', i, ', count=', count, 'error=', cvErrors[count], '\n')
+    #   found = T
+    # }
 
     count = count + 1
   }
-
-  #print final train and cv errors
-  model = createModel(train)
-  cat('    Final Train/CV Error=', computeError(train[[y]], createPrediction(model, train)), '/', computeError(cv[[y]], createPrediction(model, cv)), '\n', sep='')
 
   if (is.null(ylim)) {
     ylim = c(0, max(cvErrors, trainErrors))

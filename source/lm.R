@@ -9,6 +9,7 @@
 #D-Add YearBuilt feature: lm_YearBuilt: 0.2231406/0.2048988, 0.2229374, 0.23230
 #D-Add MasVnrArea feature: lm_MasVnrArea: 0.2186844/0.2048588, 0.2188392, 0.22588
 #D-Add sig numeric cols that lower cvError: lm_sigNum: 0.1855814/0.1673258, 0.1826243, 0.18767
+#D-Add sig one-hot-encoded factors: lm_sigFac: 0.1806693/0.1611016, 0.1776368, 0.18913
 #-Experiment with more features
 #-Group OverallQual into low(1-4), med(5-7), high(8-10) so that it doesnt cause an error
 #-Read more forum posts
@@ -20,9 +21,10 @@
 rm(list = ls())
 setwd('/Users/dan/Desktop/Kaggle/Housing')
 
-library(caret) #createDataPartition
+
 library(hydroGOF) #rmse
 source('source/_plot.R')
+source('source/_util.R')
 
 
 #============== Functions ===============
@@ -64,54 +66,56 @@ createModel = function(data) {
               # OverallQual + #2.41e-10 *** #<--in both
               LotArea + #3.37e-10 ***
               # BsmtQualGd + #2.84e-07 ***
-              # NeighborhoodStoneBr + #3.75e-06 ***
+              NeighborhoodStoneBr + #3.75e-06 ***
               # BsmtExposureGd + #4.56e-06 ***
-              # ExterQualGd + #1.11e-05 ***
+              ExterQualGd + #1.11e-05 ***
               # ExterQualTA + #0.000118 ***
               BsmtUnfSF + #1.24e-05 ***
               # GarageQualFa + #1.30e-05 ***
               # GarageQualGd + #3.65e-05 ***
               # GarageQualPo + #0.000293 ***
-              # GarageQualTA + #2.64e-05 ***
+              GarageQualTA + #2.64e-05 ***
               YearBuilt + #6.75e-05 *** #<--in both
               # PoolQCFa + #8.59e-05 ***
               # PoolQCGd + #0.000339 ***
               # Condition1Norm + #9.67e-05 ***
               MasVnrArea + #0.000204 *** #<--in both
-              # LandSlopeSev + #0.000260 ***
+              LandSlopeSev + #0.000260 ***
               BsmtFinSF2 + #0.000338 ***
               # GarageCondTA + #0.000451 ***
               # GarageCondFa + #0.000667 ***
-              # GarageCondGd,# + #0.000872 ***
+              # GarageCondGd + #0.000872 ***
               #
-              # ScreenPorch + #0.003963 **
+              ScreenPorch + #0.003963 **
               # PoolArea + #0.004163 **
-              # MSZoning + #0.004912 **
-              # RoofStyle + #.007314 **
-              # LotConfig + #0.007919 **
+              MSZoningFV + #0.004912 **
+              # RoofStyleShed + #.007314 **
+              LotConfigCulDSac + #0.007919 **
               WoodDeckSF + #0.008967 **
-              # Street + #0.009917 **
-              #
+              StreetPave + #0.009917 **
+
               Fireplaces + #0.014309 * #<--in both
-              # Fence + #0.015386 *
+              # FenceNA + #0.015386 *
+              # FenceMnPrv + #0.016233 *
               BedroomAbvGr + #0.019804 *
-              # SaleCondition + #0.021169 *
+              # SaleConditionNormal + #0.021169 *
               # GarageArea + #0.021749 * #<--in both
-              # Functional + #0.024499 *
-              # #BsmtFinType1 + #0.026342 * #WARN: prediction from a rank-deficient fit may be misleading
-              # #BsmtCond + #0.029894 * #WARN: prediction from a rank-deficient fit may be misleading
-              # #GarageType + #0.048381 * #WARN: prediction from a rank-deficient fit may be misleading
-              #
+              # FunctionalTyp + #0.024499 *
+              BsmtFinType1GLQ + #0.026342 *
+              # BsmtCondPo + #0.029894 *
+              GarageTypeDetchd + #0.048381 *
+
               MoSold + #0.050353 .
+              # BsmtFinType2LwQ + #0.064031 .
               YearRemodAdd + #0.065138 . #<--in both
-              # Foundation + #0.070998 .
+              FoundationWood + #0.070998 .
               KitchenAbvGr + #0.075688 .
               # TotRmsAbvGrd + #0.076535 . #<--in both
               FullBath + #0.080060 . #<--in both
-              # BsmtFinType2 + #0.080396 .
-              # Heating + #0.083424 .
+              BsmtFinType2BLQ + #0.080396 .
+              # HeatingQCGd + #0.083424 .
               # GarageCars + #0.093282 . #<--in both
-              # HouseStyle + #0.096509 .
+              HouseStyle2Story + #0.096509 .
 
               GrLivArea, #0.70862448 #keep this one last since I know it will be in there
             data=data))
@@ -138,7 +142,7 @@ computeError = function(y, yhat) {
 
 #Globals
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_sigNum'
+FILENAME = 'lm_sigFac'
 PROD_RUN = T
 
 source('source/_getData.R')
@@ -147,21 +151,22 @@ train = data$train
 test = data$test
 
 #one hot encode factors
-#train = oneHotEncode(train)
+train = oneHotEncode(train)
+test = oneHotEncode(test)
 
 #plot learning curve, and suppress those pesky "prediction from a rank-deficient fit may be misleading" warnings
-suppressWarnings(plotLearningCurve(train,
-                                   Y_NAME,
-                                   createModel,
-                                   createPrediction,
-                                   computeError,
-                                   ylim=c(0, 0.4),
-                                   save=PROD_RUN))
+suppressWarnings(plotLearningCurve(train, Y_NAME, createModel, createPrediction, computeError, ylim=c(0, 0.4), save=PROD_RUN))
 
 cat('Creating Linear Model...\n')
 model = createModel(train)
-cat('Getting train error...\n')
-cat('    Train Error=', computeError(train$SalePrice, createPrediction(model, train, verbose=T)), '\n', sep='')
+
+#print trn/cv, train error
+cat('Computing Errors...\n')
+trnCvErrors = computeTrainCVErrors(train, Y_NAME, createModel, createPrediction, computeError)
+trnError = trnCvErrors$train
+cvError = trnCvErrors$cv
+trainError = computeError(train[[Y_NAME]], createPrediction(model, train, verbose=T))
+cat('    Trn/CV, Train: ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
 
 if (PROD_RUN) {
   #Output solution

@@ -6,7 +6,7 @@
 #D-Print significance using summary(lm(SalePrice ~ ., data=train))
 #D-Use all significant features that don't cause a warning/error: lm_allSig: 0.142278/0.1758096, 0.1338661, 0.87067
 #D-Use 2 features (GrLivArea, X1stFlrSF): lm_X1stFlrSF: 0.2563019/0.2487681, 0.2547064, 0.26421
-#-One hot encode levels that are significant
+#D-Add YearBuilt feature: lm_YearBuilt: 0.2231406/0.2048988, 0.2229374, 0.23230
 #-Experiment with more features
 #-Group OverallQual into low(1-4), med(5-7), high(8-10) so that it doesnt cause an error
 #-Read more forum posts
@@ -71,7 +71,7 @@ createModel = function(data) {
               # GarageQualGd + #3.65e-05 ***
               # GarageQualPo + #0.000293 ***
               # GarageQualTA + #2.64e-05 ***
-              # YearBuilt + #6.75e-05 *** #<--in both
+              YearBuilt + #6.75e-05 *** #<--in both
               # PoolQCFa + #8.59e-05 ***
               # PoolQCGd + #0.000339 ***
               # Condition1Norm + #9.67e-05 ***
@@ -136,7 +136,7 @@ computeError = function(y, yhat) {
 
 #Globals
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_X1stFlrSF'
+FILENAME = 'lm_YearBuilt'
 PROD_RUN = T
 
 source('source/_getData.R')

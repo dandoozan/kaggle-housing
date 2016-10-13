@@ -28,14 +28,13 @@ plotLearningCurve = function(data, y, createModel, createPrediction, computeErro
 
     model = createModel(trainSubset)
     trainErrors[count] = computeError(trainSubset[[y]], createPrediction(model, trainSubset))
+    cvErrors[count] = computeError(cv[[y]], createPrediction(model, cv))
 
     #tbx
-    if (trainErrors[count] > 0.5 && !found) {
-      cat('i=', i, ', count=', count, 'error=', trainErrors[count], '\n')
+    if (cvErrors[count] > 0.5 && !found) {
+      cat('i=', i, ', count=', count, 'error=', cvErrors[count], '\n')
       found = T
     }
-
-    cvErrors[count] = computeError(cv[[y]], createPrediction(model, cv))
 
     count = count + 1
   }

@@ -7,6 +7,7 @@
 #D-Use all significant features that don't cause a warning/error: lm_allSig: 0.142278/0.1758096, 0.1338661, 0.87067
 #D-Use 2 features (GrLivArea, X1stFlrSF): lm_X1stFlrSF: 0.2563019/0.2487681, 0.2547064, 0.26421
 #D-Add YearBuilt feature: lm_YearBuilt: 0.2231406/0.2048988, 0.2229374, 0.23230
+#D-Add MasVnrArea feature: lm_MasVnrArea: 0.2186844/0.2048588, 0.2188392, 0.22588
 #-Experiment with more features
 #-Group OverallQual into low(1-4), med(5-7), high(8-10) so that it doesnt cause an error
 #-Read more forum posts
@@ -75,7 +76,7 @@ createModel = function(data) {
               # PoolQCFa + #8.59e-05 ***
               # PoolQCGd + #0.000339 ***
               # Condition1Norm + #9.67e-05 ***
-              # MasVnrArea + #0.000204 *** #<--in both
+              MasVnrArea + #0.000204 *** #<--in both
               # LandSlopeSev + #0.000260 ***
               # BsmtFinSF2 + #0.000338 ***
               # GarageCondTA + #0.000451 ***
@@ -136,7 +137,7 @@ computeError = function(y, yhat) {
 
 #Globals
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_YearBuilt'
+FILENAME = 'lm_MasVnrArea'
 PROD_RUN = T
 
 source('source/_getData.R')

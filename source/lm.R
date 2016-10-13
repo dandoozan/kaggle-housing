@@ -8,6 +8,7 @@
 #D-Use 2 features (GrLivArea, X1stFlrSF): lm_X1stFlrSF: 0.2563019/0.2487681, 0.2547064, 0.26421
 #D-Add YearBuilt feature: lm_YearBuilt: 0.2231406/0.2048988, 0.2229374, 0.23230
 #D-Add MasVnrArea feature: lm_MasVnrArea: 0.2186844/0.2048588, 0.2188392, 0.22588
+#D-Add sig numeric cols that lower cvError: lm_sigNum: 0.1855814/0.1673258, 0.1826243, 0.18767
 #-Experiment with more features
 #-Group OverallQual into low(1-4), med(5-7), high(8-10) so that it doesnt cause an error
 #-Read more forum posts
@@ -46,7 +47,7 @@ createModel = function(data) {
 
               #These are from the summary(model) output (they include both numeric and factor features)
               #I.e. [Feature] + #[p-value] [Signif. code]
-              # X2ndFlrSF + #< 2e-16 ***
+              X2ndFlrSF + #< 2e-16 ***
               # RoofMatlCompShg + #< 2e-16 ***
               # RoofMatlMembran + #< 2e-16 ***
               # RoofMatlMetal + #< 2e-16 ***
@@ -56,18 +57,18 @@ createModel = function(data) {
               # RoofMatlWdShngl + #< 2e-16 ***
               # Condition2PosN + #6.03e-15 ***
               X1stFlrSF + #2.05e-14 *** #<--in both
-              # BsmtFinSF1 + #3.76e-13 ***
+              BsmtFinSF1 + #3.76e-13 ***
               # KitchenQualGd + #3.61e-11 ***
               # KitchenQualTA + #1.64e-08 ***
               # OverallCond + #4.88e-11 ***
               # OverallQual + #2.41e-10 *** #<--in both
-              # LotArea + #3.37e-10 ***
+              LotArea + #3.37e-10 ***
               # BsmtQualGd + #2.84e-07 ***
               # NeighborhoodStoneBr + #3.75e-06 ***
               # BsmtExposureGd + #4.56e-06 ***
               # ExterQualGd + #1.11e-05 ***
               # ExterQualTA + #0.000118 ***
-              # BsmtUnfSF + #1.24e-05 ***
+              BsmtUnfSF + #1.24e-05 ***
               # GarageQualFa + #1.30e-05 ***
               # GarageQualGd + #3.65e-05 ***
               # GarageQualPo + #0.000293 ***
@@ -78,7 +79,7 @@ createModel = function(data) {
               # Condition1Norm + #9.67e-05 ***
               MasVnrArea + #0.000204 *** #<--in both
               # LandSlopeSev + #0.000260 ***
-              # BsmtFinSF2 + #0.000338 ***
+              BsmtFinSF2 + #0.000338 ***
               # GarageCondTA + #0.000451 ***
               # GarageCondFa + #0.000667 ***
               # GarageCondGd,# + #0.000872 ***
@@ -88,12 +89,12 @@ createModel = function(data) {
               # MSZoning + #0.004912 **
               # RoofStyle + #.007314 **
               # LotConfig + #0.007919 **
-              # WoodDeckSF + #0.008967 **
+              WoodDeckSF + #0.008967 **
               # Street + #0.009917 **
               #
-              # Fireplaces + #0.014309 * #<--in both
+              Fireplaces + #0.014309 * #<--in both
               # Fence + #0.015386 *
-              # BedroomAbvGr + #0.019804 *
+              BedroomAbvGr + #0.019804 *
               # SaleCondition + #0.021169 *
               # GarageArea + #0.021749 * #<--in both
               # Functional + #0.024499 *
@@ -101,12 +102,12 @@ createModel = function(data) {
               # #BsmtCond + #0.029894 * #WARN: prediction from a rank-deficient fit may be misleading
               # #GarageType + #0.048381 * #WARN: prediction from a rank-deficient fit may be misleading
               #
-              # MoSold + #0.050353 .
-              # YearRemodAdd + #0.065138 . #<--in both
+              MoSold + #0.050353 .
+              YearRemodAdd + #0.065138 . #<--in both
               # Foundation + #0.070998 .
-              # KitchenAbvGr + #0.075688 .
+              KitchenAbvGr + #0.075688 .
               # TotRmsAbvGrd + #0.076535 . #<--in both
-              # FullBath + #0.080060 . #<--in both
+              FullBath + #0.080060 . #<--in both
               # BsmtFinType2 + #0.080396 .
               # Heating + #0.083424 .
               # GarageCars + #0.093282 . #<--in both
@@ -137,7 +138,7 @@ computeError = function(y, yhat) {
 
 #Globals
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_MasVnrArea'
+FILENAME = 'lm_sigNum'
 PROD_RUN = T
 
 source('source/_getData.R')
@@ -148,8 +149,14 @@ test = data$test
 #one hot encode factors
 #train = oneHotEncode(train)
 
-#plot learning curve
-plotLearningCurve(train, Y_NAME, createModel, createPrediction, computeError, save=PROD_RUN)
+#plot learning curve, and suppress those pesky "prediction from a rank-deficient fit may be misleading" warnings
+suppressWarnings(plotLearningCurve(train,
+                                   Y_NAME,
+                                   createModel,
+                                   createPrediction,
+                                   computeError,
+                                   ylim=c(0, 0.4),
+                                   save=PROD_RUN))
 
 cat('Creating Linear Model...\n')
 model = createModel(train)

@@ -2,7 +2,6 @@
 #D-fill NAs using roughfix
 #D-combine rare values in all factor cols
 #D-change NAs to -1s for GarageYrBlt before roughfix b/c the NAs represent no garage
-#-convert cols that have ratings as strings (eg. "Ex"/"Gd"/"TA"/"Fa"/"Po") to ints (5:1)
 
 setwd('/Users/dan/Desktop/Kaggle/Housing')
 
@@ -24,7 +23,7 @@ library(caret) #dummyVars
 #     ScreenPorch,PoolArea,PoolQC,Fence,MiscFeature,MiscVal,MoSold,YrSold,
 #     SaleType,SaleCondition,SalePrice
 
-NUMERIC_COLS = c("Id", "LotFrontage", "LotArea", "OverallQual", "OverallCond", "YearBuilt",
+NUMERIC_COLS = c("Id", "LotFrontage", "LotArea", "YearBuilt",
                  "YearRemodAdd", "MasVnrArea", "BsmtFinSF1", "BsmtFinSF2", "BsmtUnfSF", "TotalBsmtSF",
                  "X1stFlrSF", "X2ndFlrSF", "LowQualFinSF", "GrLivArea", "BsmtFullBath", "BsmtHalfBath",
                  "FullBath", "HalfBath", "BedroomAbvGr", "KitchenAbvGr", "TotRmsAbvGrd", "Fireplaces",

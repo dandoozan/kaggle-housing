@@ -10,8 +10,8 @@
 #D-Add MasVnrArea feature: lm_MasVnrArea: 0.2186844/0.2048588, 0.2188392, 0.22588
 #D-Add sig numeric cols that lower cvError: lm_sigNum: 0.1855814/0.1673258, 0.1826243, 0.18767
 #D-Add sig one-hot-encoded factors: lm_sigFac: 0.1806693/0.1611016, 0.1776368, 0.18913
+#D-Add OverallQual as factor: lm_+OverallQual: 0.1671927/0.1550466, 0.1625823, 0.17642
 #-Experiment with more features
-#-Group OverallQual into low(1-4), med(5-7), high(8-10) so that it doesnt cause an error
 #-Read more forum posts
 #-handle negative values better somehow
 #-make new features from the interaction b/n highly-correlated features (eg. train$year_qual = train$YearBuilt*train$OverallQual)
@@ -63,7 +63,7 @@ createModel = function(data) {
               # KitchenQualGd + #3.61e-11 ***
               # KitchenQualTA + #1.64e-08 ***
               # OverallCond + #4.88e-11 ***
-              # OverallQual + #2.41e-10 *** #<--in both
+              OverallQual10 + #0.000194 *** #<--in both
               LotArea + #3.37e-10 ***
               # BsmtQualGd + #2.84e-07 ***
               NeighborhoodStoneBr + #3.75e-06 ***
@@ -94,6 +94,7 @@ createModel = function(data) {
               WoodDeckSF + #0.008967 **
               StreetPave + #0.009917 **
 
+              OverallQual9 + #0.012977 *
               Fireplaces + #0.014309 * #<--in both
               # FenceNA + #0.015386 *
               # FenceMnPrv + #0.016233 *
@@ -142,7 +143,7 @@ computeError = function(y, yhat) {
 
 #Globals
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_sigFac'
+FILENAME = 'lm_+OverallQual'
 PROD_RUN = T
 
 source('source/_getData.R')

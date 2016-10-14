@@ -13,6 +13,7 @@
 #D-Add OverallQual as factor: lm_+OverallQual: 0.1671927/0.1550466, 0.1625823, 0.17642
 #D-Make another pass adding sig features: lm_addSig: 0.1659369/0.1486695, 0.1619065, 0.17769
 #D-Made 2 passes with new sig rankings: lm_newSig: 0.1543123/0.1343682, 0.1496322, 0.18712
+#D-Add high-correlation features: lm_addCorr, 0.1551667/0.1333876, 0.1500612, 0.18435
 #-Maybe convert year features (eg. YearBuilt) to factors
 #-Maybe convert count features (eg. FullBath) to factors
 #-Experiment with more features
@@ -39,12 +40,12 @@ createModel = function(data) {
               #These are from the correlation plot (they include numeric features only)
               #I.e. [Feature] + #[correlation]
               # OverallQual + #0.79098160 #<--in both
-              # GarageCars + #0.64040920 #<--in both
+              GarageCars + #0.64040920
               # GarageArea + #0.62343144 #<--in both
-              # TotalBsmtSF + #0.61358055
+              # TotalBsmtSF + #0.61358055 #<--in both
               # X1stFlrSF + #0.60585218 #<--in both
               # FullBath + #0.56066376 #<--in both
-              # TotRmsAbvGrd + #0.53372316 #<--in both
+              # TotRmsAbvGrd + #0.53372316
               # YearBuilt + #0.52289733 #<--in both
               # YearRemodAdd + #0.50710097 #<--in both
               # MasVnrArea + #0.47261450 #<--in both
@@ -171,7 +172,7 @@ computeError = function(y, yhat) {
 
 #Globals
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_newSig'
+FILENAME = 'lm_addCorr'
 PROD_RUN = T
 
 source('source/_getData.R')

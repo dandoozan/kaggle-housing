@@ -1,0 +1,276 @@
+(Intercept)          -7.207e+05  1.065e+06  -0.677 0.498793
+Id                    1.013e+00  1.555e+00   0.651 0.514910
+MSSubClass160         2.574e+03  9.810e+03   0.262 0.793055
+MSSubClass180        -3.197e+03  1.349e+04  -0.237 0.812738
+MSSubClass190         1.227e+04  3.166e+04   0.388 0.698410
+MSSubClass20          1.013e+04  1.468e+04   0.690 0.490286
+MSSubClass30          1.330e+04  1.534e+04   0.867 0.386215
+MSSubClass40          5.984e+03  2.291e+04   0.261 0.794001
+MSSubClass45          6.016e+03  2.893e+04   0.208 0.835312
+MSSubClass50          8.139e+03  1.696e+04   0.480 0.631363
+MSSubClass60          1.504e+04  1.642e+04   0.916 0.359919
+MSSubClass70          1.725e+04  1.669e+04   1.034 0.301547
+MSSubClass75         -6.813e+03  2.165e+04  -0.315 0.753084
+MSSubClass80         -9.809e+02  1.954e+04  -0.050 0.959963
+MSSubClass85         -3.811e+03  1.827e+04  -0.209 0.834752
+MSSubClass90         -3.888e+03  1.655e+04  -0.235 0.814304
+MSZoningFV            3.450e+04  1.224e+04   2.818 0.004912 **
+MSZoningRH            2.349e+04  1.210e+04   1.941 0.052489 .
+MSZoningRL            2.691e+04  1.045e+04   2.575 0.010147 *
+MSZoningRM            2.355e+04  9.818e+03   2.398 0.016619 *
+LotFrontage           5.359e+01  4.424e+01   1.211 0.226071
+LotArea               7.003e-01  1.106e-01   6.334 3.37e-10 ***
+StreetPave            3.253e+04  1.259e+04   2.583 0.009917 **
+AlleyNA              -1.757e+03  4.255e+03  -0.413 0.679760
+AlleyPave            -1.305e+02  6.239e+03  -0.021 0.983317
+LotShapeIR2           4.767e+03  4.231e+03   1.127 0.260057
+LotShapeIR3           4.375e+03  8.898e+03   0.492 0.623029
+LotShapeReg           1.841e+03  1.615e+03   1.140 0.254385
+LandContourHLS        8.338e+03  5.205e+03   1.602 0.109454
+LandContourLow       -1.005e+04  6.525e+03  -1.541 0.123683
+LandContourLvl        5.643e+03  3.755e+03   1.503 0.133109
+UtilitiesNoSeWa      -4.431e+04  2.862e+04  -1.548 0.121904
+LotConfigCulDSac      8.831e+03  3.320e+03   2.660 0.007919 **
+LotConfigFR2         -7.162e+03  4.038e+03  -1.774 0.076401 .
+LotConfigFR3         -1.728e+04  1.264e+04  -1.367 0.171826
+LotConfigInside      -1.477e+03  1.799e+03  -0.821 0.411767
+LandSlopeMod          7.455e+03  4.040e+03   1.846 0.065191 .
+LandSlopeSev         -4.205e+04  1.148e+04  -3.663 0.000260 ***
+NeighborhoodBlueste   9.882e+03  2.008e+04   0.492 0.622744
+NeighborhoodBrDale   -8.118e+02  1.180e+04  -0.069 0.945173
+NeighborhoodBrkSide  -7.152e+03  9.646e+03  -0.741 0.458584
+NeighborhoodClearCr  -1.522e+04  9.357e+03  -1.626 0.104151
+NeighborhoodCollgCr  -1.079e+04  7.329e+03  -1.472 0.141319
+NeighborhoodCrawfor   1.039e+04  8.690e+03   1.196 0.231943
+NeighborhoodEdwards  -2.210e+04  8.111e+03  -2.724 0.006542 **
+NeighborhoodGilbert  -1.218e+04  7.744e+03  -1.572 0.116176
+NeighborhoodIDOTRR   -1.301e+04  1.094e+04  -1.189 0.234756
+NeighborhoodMeadowV  -9.341e+03  1.237e+04  -0.755 0.450242
+NeighborhoodMitchel  -2.154e+04  8.246e+03  -2.612 0.009106 **
+NeighborhoodNAmes    -1.761e+04  7.918e+03  -2.224 0.026319 *
+NeighborhoodNoRidge   2.366e+04  8.518e+03   2.778 0.005555 **
+NeighborhoodNPkVill   1.244e+04  1.408e+04   0.883 0.377433
+NeighborhoodNridgHt   1.748e+04  7.558e+03   2.312 0.020935 *
+NeighborhoodNWAmes   -1.829e+04  8.097e+03  -2.259 0.024055 *
+NeighborhoodOldTown  -1.534e+04  9.781e+03  -1.568 0.117160
+NeighborhoodSawyer   -1.151e+04  8.200e+03  -1.404 0.160525
+NeighborhoodSawyerW  -3.459e+03  7.864e+03  -0.440 0.660131
+NeighborhoodSomerst  -3.051e+03  9.100e+03  -0.335 0.737497
+NeighborhoodStoneBr   3.893e+04  8.378e+03   4.646 3.75e-06 ***
+NeighborhoodSWISU    -8.987e+03  9.812e+03  -0.916 0.359909
+NeighborhoodTimber   -1.048e+04  8.213e+03  -1.276 0.202073
+NeighborhoodVeenker  -2.978e+02  1.053e+04  -0.028 0.977451
+Condition1Feedr       6.835e+03  5.054e+03   1.352 0.176533
+Condition1Norm        1.653e+04  4.226e+03   3.912 9.67e-05 ***
+Condition1PosA        9.453e+03  1.006e+04   0.940 0.347358
+Condition1PosN        1.513e+04  7.502e+03   2.016 0.043972 *
+Condition1RRAe       -1.528e+04  9.137e+03  -1.673 0.094684 .
+Condition1RRAn        1.348e+04  6.993e+03   1.927 0.054157 .
+Condition1RRNe       -3.924e+03  1.753e+04  -0.224 0.822915
+Condition1RRNn        1.220e+04  1.293e+04   0.943 0.345791
+Condition2Feedr      -4.449e+03  2.662e+04  -0.167 0.867286
+Condition2Norm       -1.075e+04  2.403e+04  -0.447 0.654596
+Condition2PosA        4.771e+04  3.921e+04   1.217 0.223964
+Condition2PosN       -2.406e+05  3.043e+04  -7.906 6.03e-15 ***
+Condition2RRAe       -1.355e+05  7.293e+04  -1.858 0.063469 .
+Condition2RRAn       -2.278e+04  3.418e+04  -0.667 0.505202
+Condition2RRNn       -2.407e+03  3.023e+04  -0.080 0.936546
+BldgType2fmCon       -1.442e+04  2.740e+04  -0.526 0.598698
+BldgTypeDuplex               NA         NA      NA       NA
+BldgTypeTwnhs        -1.337e+04  1.569e+04  -0.852 0.394339
+BldgTypeTwnhsE       -9.335e+03  1.491e+04  -0.626 0.531299
+HouseStyle1.5Unf      1.443e+04  2.483e+04   0.581 0.561294
+HouseStyle1Story      3.122e+03  8.962e+03   0.348 0.727627
+HouseStyle2.5Fin     -8.350e+03  1.797e+04  -0.465 0.642210
+HouseStyle2.5Unf      1.581e+03  1.683e+04   0.094 0.925198
+HouseStyle2Story     -1.365e+04  8.206e+03  -1.663 0.096509 .
+HouseStyleSFoyer      5.683e+03  1.191e+04   0.477 0.633258
+HouseStyleSLvl        8.898e+03  1.391e+04   0.640 0.522559
+OverallQual           6.614e+03  1.035e+03   6.388 2.41e-10 ***
+OverallCond           5.858e+03  8.827e+02   6.636 4.88e-11 ***
+YearBuilt             3.357e+02  8.395e+01   3.999 6.75e-05 ***
+YearRemodAdd          1.036e+02  5.612e+01   1.846 0.065138 .
+RoofStyleGable        1.000e+04  1.855e+04   0.539 0.589727
+RoofStyleGambrel      1.278e+04  2.034e+04   0.628 0.529968
+RoofStyleHip          9.497e+03  1.861e+04   0.510 0.609899
+RoofStyleMansard      2.147e+04  2.154e+04   0.997 0.319110
+RoofStyleShed         1.037e+05  3.859e+04   2.687 0.007314 **
+RoofMatlCompShg       5.843e+05  5.324e+04  10.975  < 2e-16 ***
+RoofMatlMembran       6.814e+05  6.307e+04  10.803  < 2e-16 ***
+RoofMatlMetal         6.497e+05  6.279e+04  10.346  < 2e-16 ***
+RoofMatlRoll          5.786e+05  5.909e+04   9.792  < 2e-16 ***
+RoofMatlTar.Grv       5.853e+05  5.706e+04  10.257  < 2e-16 ***
+RoofMatlWdShake       5.764e+05  5.565e+04  10.359  < 2e-16 ***
+RoofMatlWdShngl       6.395e+05  5.419e+04  11.800  < 2e-16 ***
+Exterior1stAsphShn   -2.276e+04  3.315e+04  -0.687 0.492460
+Exterior1stBrkComm   -1.343e+03  2.847e+04  -0.047 0.962395
+Exterior1stBrkFace    1.017e+04  1.294e+04   0.786 0.431811
+Exterior1stCBlock    -1.378e+04  2.774e+04  -0.497 0.619517
+Exterior1stCemntBd   -9.978e+03  1.920e+04  -0.520 0.603432
+Exterior1stHdBoard   -1.111e+04  1.313e+04  -0.846 0.397621
+Exterior1stImStucc   -1.820e+04  2.839e+04  -0.641 0.521689
+Exterior1stMetalSd   -2.981e+03  1.491e+04  -0.200 0.841564
+Exterior1stPlywood   -1.160e+04  1.296e+04  -0.895 0.370951
+Exterior1stStone      1.449e+03  2.452e+04   0.059 0.952876
+Exterior1stStucco    -5.556e+03  1.424e+04  -0.390 0.696407
+Exterior1stVinylSd   -1.094e+04  1.356e+04  -0.807 0.419964
+Exterior1stWd.Sdng   -1.158e+04  1.258e+04  -0.920 0.357643
+Exterior1stWdShing   -7.509e+03  1.357e+04  -0.553 0.580140
+Exterior2ndAsphShn    8.984e+03  2.245e+04   0.400 0.689036
+Exterior2ndBrk.Cmn    5.267e+03  2.081e+04   0.253 0.800242
+Exterior2ndBrkFace    1.524e+03  1.339e+04   0.114 0.909423
+Exterior2ndCBlock            NA         NA      NA       NA
+Exterior2ndCmentBd    1.075e+04  1.887e+04   0.569 0.569252
+Exterior2ndHdBoard    6.087e+03  1.263e+04   0.482 0.629936
+Exterior2ndImStucc    1.318e+04  1.460e+04   0.903 0.366923
+Exterior2ndMetalSd    2.766e+03  1.451e+04   0.191 0.848832
+Exterior2ndOther     -2.147e+04  2.722e+04  -0.789 0.430297
+Exterior2ndPlywood    4.215e+03  1.227e+04   0.344 0.731201
+Exterior2ndStone     -1.226e+04  1.749e+04  -0.701 0.483511
+Exterior2ndStucco     3.055e+03  1.375e+04   0.222 0.824268
+Exterior2ndVinylSd    9.640e+03  1.305e+04   0.739 0.460113
+Exterior2ndWd.Sdng    9.314e+03  1.214e+04   0.767 0.443263
+Exterior2ndWd.Shng    3.248e+03  1.266e+04   0.257 0.797488
+MasVnrTypeBrkFace     4.354e+03  6.868e+03   0.634 0.526179
+MasVnrTypeNA          2.108e+03  1.095e+04   0.193 0.847313
+MasVnrTypeNone        7.529e+03  6.935e+03   1.086 0.277839
+MasVnrTypeStone       9.315e+03  7.285e+03   1.279 0.201240
+MasVnrArea            2.173e+01  5.834e+00   3.725 0.000204 ***
+ExterQualFa          -9.419e+03  1.224e+04  -0.769 0.441890
+ExterQualGd          -2.118e+04  4.799e+03  -4.414 1.11e-05 ***
+ExterQualTA          -2.063e+04  5.341e+03  -3.862 0.000118 ***
+ExterCondFa          -2.541e+03  1.814e+04  -0.140 0.888644
+ExterCondGd          -7.593e+03  1.730e+04  -0.439 0.660908
+ExterCondPo           7.294e+03  3.188e+04   0.229 0.819067
+ExterCondTA          -4.532e+03  1.726e+04  -0.263 0.792959
+FoundationCBlock      3.770e+03  3.255e+03   1.158 0.246956
+FoundationPConc       5.013e+03  3.479e+03   1.441 0.149875
+FoundationSlab       -6.136e+03  1.012e+04  -0.606 0.544352
+FoundationStone       8.568e+03  1.154e+04   0.743 0.457833
+FoundationWood       -2.687e+04  1.487e+04  -1.807 0.070998 .
+BsmtQualFa           -1.007e+04  6.499e+03  -1.549 0.121717
+BsmtQualGd           -1.734e+04  3.358e+03  -5.163 2.84e-07 ***
+BsmtQualNA            4.258e+04  3.674e+04   1.159 0.246654
+BsmtQualTA           -1.340e+04  4.202e+03  -3.188 0.001470 **
+BsmtCondGd            9.364e+02  5.323e+03   0.176 0.860380
+BsmtCondNA                   NA         NA      NA       NA
+BsmtCondPo            6.593e+04  3.033e+04   2.174 0.029894 *
+BsmtCondTA            3.450e+03  4.295e+03   0.803 0.421972
+BsmtExposureGd        1.400e+04  3.039e+03   4.605 4.56e-06 ***
+BsmtExposureMn       -3.688e+03  3.037e+03  -1.214 0.224802
+BsmtExposureNA       -1.132e+04  2.302e+04  -0.492 0.622981
+BsmtExposureNo       -5.238e+03  2.192e+03  -2.390 0.017016 *
+BsmtFinType1BLQ       2.849e+03  2.814e+03   1.012 0.311528
+BsmtFinType1GLQ       5.646e+03  2.539e+03   2.224 0.026342 *
+BsmtFinType1LwQ      -3.103e+03  3.774e+03  -0.822 0.411103
+BsmtFinType1NA               NA         NA      NA       NA
+BsmtFinType1Rec       9.780e+01  3.018e+03   0.032 0.974152
+BsmtFinType1Unf       3.084e+03  2.945e+03   1.047 0.295327
+BsmtFinSF1            3.967e+01  5.399e+00   7.346 3.76e-13 ***
+BsmtFinType2BLQ      -1.331e+04  7.607e+03  -1.750 0.080396 .
+BsmtFinType2GLQ      -2.853e+03  9.444e+03  -0.302 0.762641
+BsmtFinType2LwQ      -1.379e+04  7.439e+03  -1.854 0.064031 .
+BsmtFinType2NA       -2.998e+04  2.504e+04  -1.197 0.231495
+BsmtFinType2Rec      -1.012e+04  7.152e+03  -1.415 0.157459
+BsmtFinType2Unf      -8.051e+03  7.620e+03  -1.057 0.290912
+BsmtFinSF2            3.282e+01  9.128e+00   3.595 0.000338 ***
+BsmtUnfSF             2.169e+01  4.941e+00   4.389 1.24e-05 ***
+TotalBsmtSF                  NA         NA      NA       NA
+HeatingGasA           8.475e+03  2.569e+04   0.330 0.741499
+HeatingGasW           5.397e+03  2.646e+04   0.204 0.838398
+HeatingGrav          -4.125e+02  2.832e+04  -0.015 0.988384
+HeatingOthW          -9.140e+03  3.165e+04  -0.289 0.772835
+HeatingWall           2.062e+04  2.986e+04   0.691 0.489933
+HeatingQCFa           4.656e+01  4.754e+03   0.010 0.992188
+HeatingQCGd          -3.616e+03  2.087e+03  -1.733 0.083424 .
+HeatingQCPo           2.155e+03  2.674e+04   0.081 0.935782
+HeatingQCTA          -3.078e+03  2.082e+03  -1.478 0.139668
+CentralAirY          -1.005e+03  3.917e+03  -0.257 0.797577
+ElectricalFuseF      -6.837e+02  5.846e+03  -0.117 0.906910
+ElectricalFuseP      -7.397e+03  1.882e+04  -0.393 0.694320
+ElectricalMix        -4.441e+04  4.494e+04  -0.988 0.323273
+ElectricalNA          1.038e+04  2.419e+04   0.429 0.668079
+ElectricalSBrkr      -2.242e+03  3.030e+03  -0.740 0.459344
+X1stFlrSF             4.403e+01  5.686e+00   7.743 2.05e-14 ***
+X2ndFlrSF             6.135e+01  5.824e+00  10.534  < 2e-16 ***
+LowQualFinSF         -4.135e+00  1.931e+01  -0.214 0.830461
+GrLivArea                    NA         NA      NA       NA
+BsmtFullBath          1.621e+03  1.998e+03   0.811 0.417381
+BsmtHalfBath         -2.647e+02  3.043e+03  -0.087 0.930696
+FullBath              3.908e+03  2.231e+03   1.752 0.080060 .
+HalfBath              1.691e+03  2.115e+03   0.800 0.424113
+BedroomAbvGr         -3.292e+03  1.411e+03  -2.333 0.019804 *
+KitchenAbvGr         -1.104e+04  6.211e+03  -1.778 0.075688 .
+KitchenQualFa        -2.016e+04  6.278e+03  -3.211 0.001360 **
+KitchenQualGd        -2.335e+04  3.495e+03  -6.682 3.61e-11 ***
+KitchenQualTA        -2.246e+04  3.950e+03  -5.685 1.64e-08 ***
+TotRmsAbvGrd          1.717e+03  9.684e+02   1.773 0.076535 .
+FunctionalMaj2       -3.277e+03  1.453e+04  -0.225 0.821664
+FunctionalMin1        5.802e+03  8.762e+03   0.662 0.507971
+FunctionalMin2        8.203e+03  8.890e+03   0.923 0.356325
+FunctionalMod        -6.839e+03  1.072e+04  -0.638 0.523519
+FunctionalSev        -4.115e+04  2.987e+04  -1.378 0.168491
+FunctionalTyp         1.733e+04  7.694e+03   2.252 0.024499 *
+Fireplaces            6.310e+03  2.572e+03   2.453 0.014309 *
+FireplaceQuFa        -1.912e+03  6.930e+03  -0.276 0.782695
+FireplaceQuGd         1.735e+03  5.370e+03   0.323 0.746743
+FireplaceQuNA         7.906e+03  6.270e+03   1.261 0.207605
+FireplaceQuPo         1.172e+04  7.965e+03   1.471 0.141599
+FireplaceQuTA         2.837e+03  5.576e+03   0.509 0.611001
+GarageTypeAttchd      1.854e+04  1.109e+04   1.671 0.094959 .
+GarageTypeBasment     2.218e+04  1.294e+04   1.714 0.086843 .
+GarageTypeBuiltIn     1.863e+04  1.158e+04   1.609 0.107967
+GarageTypeCarPort     2.425e+04  1.491e+04   1.627 0.104089
+GarageTypeDetchd      2.190e+04  1.108e+04   1.976 0.048381 *
+GarageTypeNA         -1.772e+04  1.227e+05  -0.144 0.885261
+GarageYrBlt          -2.042e+01  6.160e+01  -0.332 0.740324
+GarageFinishNA               NA         NA      NA       NA
+GarageFinishRFn      -2.225e+03  1.972e+03  -1.128 0.259405
+GarageFinishUnf      -2.316e+02  2.450e+03  -0.095 0.924695
+GarageCars            3.845e+03  2.289e+03   1.680 0.093282 .
+GarageArea            1.822e+01  7.931e+00   2.298 0.021749 *
+GarageQualFa         -1.333e+05  3.046e+04  -4.378 1.30e-05 ***
+GarageQualGd         -1.298e+05  3.133e+04  -4.144 3.65e-05 ***
+GarageQualNA                 NA         NA      NA       NA
+GarageQualPo         -1.450e+05  3.993e+04  -3.632 0.000293 ***
+GarageQualTA         -1.273e+05  3.018e+04  -4.219 2.64e-05 ***
+GarageCondFa          1.197e+05  3.507e+04   3.412 0.000667 ***
+GarageCondGd          1.220e+05  3.654e+04   3.337 0.000872 ***
+GarageCondNA                 NA         NA      NA       NA
+GarageCondPo          1.237e+05  3.822e+04   3.237 0.001242 **
+GarageCondTA          1.225e+05  3.481e+04   3.518 0.000451 ***
+PavedDriveP          -3.974e+03  5.626e+03  -0.706 0.480060
+PavedDriveY          -5.362e+02  3.490e+03  -0.154 0.877943
+WoodDeckSF            1.545e+01  5.901e+00   2.618 0.008967 **
+OpenPorchSF           9.085e-01  1.173e+01   0.077 0.938271
+EnclosedPorch         4.068e+00  1.261e+01   0.323 0.746999
+X3SsnPorch            3.410e+01  2.242e+01   1.521 0.128558
+ScreenPorch           3.625e+01  1.256e+01   2.887 0.003963 **
+PoolArea              6.596e+02  2.298e+02   2.871 0.004163 **
+PoolQCFa             -1.624e+05  4.120e+04  -3.941 8.59e-05 ***
+PoolQCGd             -1.339e+05  3.724e+04  -3.594 0.000339 ***
+PoolQCNA              2.323e+05  1.254e+05   1.853 0.064121 .
+FenceGdWo             8.056e+03  4.952e+03   1.627 0.104062
+FenceMnPrv            9.704e+03  4.032e+03   2.407 0.016233 *
+FenceMnWw             3.848e+03  8.241e+03   0.467 0.640625
+FenceNA               8.975e+03  3.699e+03   2.427 0.015386 *
+MiscFeatureNA        -4.207e+03  1.011e+05  -0.042 0.966821
+MiscFeatureOthr       1.460e+04  9.257e+04   0.158 0.874709
+MiscFeatureShed      -1.500e+03  9.674e+04  -0.016 0.987636
+MiscFeatureTenC       2.171e+04  9.985e+04   0.217 0.827884
+MiscVal              -2.380e-01  6.377e+00  -0.037 0.970233
+MoSold               -4.837e+02  2.469e+02  -1.959 0.050353 .
+YrSold               -5.070e+02  5.178e+02  -0.979 0.327708
+SaleTypeCon           2.524e+04  1.760e+04   1.434 0.151832
+SaleTypeConLD         1.535e+04  9.954e+03   1.543 0.123204
+SaleTypeConLI         3.711e+03  1.161e+04   0.320 0.749358
+SaleTypeConLw         2.133e+03  1.225e+04   0.174 0.861777
+SaleTypeCWD           1.499e+04  1.292e+04   1.160 0.246121
+SaleTypeNew           1.956e+04  1.553e+04   1.260 0.208029
+SaleTypeOth           6.828e+03  1.457e+04   0.469 0.639312
+SaleTypeWD           -5.590e+02  4.208e+03  -0.133 0.894325
+SaleConditionAdjLand  1.035e+04  1.466e+04   0.706 0.480113
+SaleConditionAlloca   7.733e+02  9.127e+03   0.085 0.932491
+SaleConditionFamily   9.516e+02  6.120e+03   0.155 0.876455
+SaleConditionNormal   6.738e+03  2.919e+03   2.308 0.021169 *
+SaleConditionPartial  1.368e+03  1.493e+04   0.092 0.927023

@@ -11,6 +11,7 @@
 #D-Add sig numeric cols that lower cvError: lm_sigNum: 0.1855814/0.1673258, 0.1826243, 0.18767
 #D-Add sig one-hot-encoded factors: lm_sigFac: 0.1806693/0.1611016, 0.1776368, 0.18913
 #D-Add OverallQual as factor: lm_+OverallQual: 0.1671927/0.1550466, 0.1625823, 0.17642
+#D-Make another pass adding sig features: lm_addSig: 0.1659369/0.1486695, 0.1619065, 0.17769
 #-Experiment with more features
 #-Read more forum posts
 #-handle negative values better somehow
@@ -51,52 +52,51 @@ createModel = function(data) {
               #I.e. [Feature] + #[p-value] [Signif. code]
               X2ndFlrSF + #< 2e-16 ***
               # RoofMatlCompShg + #< 2e-16 ***
-              # RoofMatlMembran + #< 2e-16 ***
+              # RoofMatlMembran + #< 2e-16 *** #ERROR: object 'RoofMatlMembran' not found
               # RoofMatlMetal + #< 2e-16 ***
               # RoofMatlRoll + #< 2e-16 ***
               # RoofMatlTar.Grv + #< 2e-16 ***
-              # RoofMatlWdShake + #< 2e-16 ***
+              RoofMatlWdShake + #< 2e-16 ***
               # RoofMatlWdShngl + #< 2e-16 ***
-              # Condition2PosN + #6.03e-15 ***
+              Condition2PosN + #6.03e-15 ***
               X1stFlrSF + #2.05e-14 *** #<--in both
               BsmtFinSF1 + #3.76e-13 ***
-              # KitchenQualGd + #3.61e-11 ***
-              # KitchenQualTA + #1.64e-08 ***
-              # OverallCond + #4.88e-11 ***
+              KitchenQualGd + #3.61e-11 ***
+              KitchenQualTA + #1.64e-08 ***
               OverallQual10 + #0.000194 *** #<--in both
               LotArea + #3.37e-10 ***
               # BsmtQualGd + #2.84e-07 ***
               NeighborhoodStoneBr + #3.75e-06 ***
-              # BsmtExposureGd + #4.56e-06 ***
+              BsmtExposureGd + #4.56e-06 ***
               ExterQualGd + #1.11e-05 ***
               # ExterQualTA + #0.000118 ***
               BsmtUnfSF + #1.24e-05 ***
-              # GarageQualFa + #1.30e-05 ***
+              # GarageQualFa + #1.30e-05 *** #ERROR: object 'GarageQualFa' not found
               # GarageQualGd + #3.65e-05 ***
               # GarageQualPo + #0.000293 ***
               GarageQualTA + #2.64e-05 ***
               YearBuilt + #6.75e-05 *** #<--in both
               # PoolQCFa + #8.59e-05 ***
               # PoolQCGd + #0.000339 ***
-              # Condition1Norm + #9.67e-05 ***
+              Condition1Norm + #9.67e-05 ***
               MasVnrArea + #0.000204 *** #<--in both
               LandSlopeSev + #0.000260 ***
               BsmtFinSF2 + #0.000338 ***
-              # GarageCondTA + #0.000451 ***
-              # GarageCondFa + #0.000667 ***
+              GarageCondTA + #0.000451 ***
+              GarageCondFa + #0.000667 ***
               # GarageCondGd + #0.000872 ***
               #
               ScreenPorch + #0.003963 **
               # PoolArea + #0.004163 **
               MSZoningFV + #0.004912 **
-              # RoofStyleShed + #.007314 **
+              RoofStyleShed + #.007314 **
               LotConfigCulDSac + #0.007919 **
               WoodDeckSF + #0.008967 **
               StreetPave + #0.009917 **
 
               OverallQual9 + #0.012977 *
               Fireplaces + #0.014309 * #<--in both
-              # FenceNA + #0.015386 *
+              FenceNA + #0.015386 *
               # FenceMnPrv + #0.016233 *
               BedroomAbvGr + #0.019804 *
               # SaleConditionNormal + #0.021169 *
@@ -107,7 +107,7 @@ createModel = function(data) {
               GarageTypeDetchd + #0.048381 *
 
               MoSold + #0.050353 .
-              # BsmtFinType2LwQ + #0.064031 .
+              BsmtFinType2LwQ + #0.064031 .
               YearRemodAdd + #0.065138 . #<--in both
               FoundationWood + #0.070998 .
               KitchenAbvGr + #0.075688 .
@@ -143,7 +143,7 @@ computeError = function(y, yhat) {
 
 #Globals
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_+OverallQual'
+FILENAME = 'lm_addSig'
 PROD_RUN = T
 
 source('source/_getData.R')

@@ -12,6 +12,9 @@
 #D-Add sig one-hot-encoded factors: lm_sigFac: 0.1806693/0.1611016, 0.1776368, 0.18913
 #D-Add OverallQual as factor: lm_+OverallQual: 0.1671927/0.1550466, 0.1625823, 0.17642
 #D-Make another pass adding sig features: lm_addSig: 0.1659369/0.1486695, 0.1619065, 0.17769
+#D-Made 2 passes with new sig rankings: lm_newSig: 0.1543123/0.1343682, 0.1496322, 0.18712
+#-Maybe convert year features (eg. YearBuilt) to factors
+#-Maybe convert count features (eg. FullBath) to factors
 #-Experiment with more features
 #-Read more forum posts
 #-handle negative values better somehow
@@ -50,75 +53,100 @@ createModel = function(data) {
 
               #These are from the summary(model) output (they include both numeric and factor features)
               #I.e. [Feature] + #[p-value] [Signif. code]
-              X2ndFlrSF + #< 2e-16 ***
-              # RoofMatlCompShg + #< 2e-16 ***
-              # RoofMatlMembran + #< 2e-16 *** #ERROR: object 'RoofMatlMembran' not found
-              # RoofMatlMetal + #< 2e-16 ***
-              # RoofMatlRoll + #< 2e-16 ***
-              # RoofMatlTar.Grv + #< 2e-16 ***
-              RoofMatlWdShake + #< 2e-16 ***
-              # RoofMatlWdShngl + #< 2e-16 ***
-              Condition2PosN + #6.03e-15 ***
-              X1stFlrSF + #2.05e-14 *** #<--in both
-              BsmtFinSF1 + #3.76e-13 ***
-              KitchenQualGd + #3.61e-11 ***
-              KitchenQualTA + #1.64e-08 ***
-              OverallQual10 + #0.000194 *** #<--in both
-              LotArea + #3.37e-10 ***
-              # BsmtQualGd + #2.84e-07 ***
-              NeighborhoodStoneBr + #3.75e-06 ***
-              BsmtExposureGd + #4.56e-06 ***
-              ExterQualGd + #1.11e-05 ***
-              # ExterQualTA + #0.000118 ***
-              BsmtUnfSF + #1.24e-05 ***
-              # GarageQualFa + #1.30e-05 *** #ERROR: object 'GarageQualFa' not found
-              # GarageQualGd + #3.65e-05 ***
-              # GarageQualPo + #0.000293 ***
-              GarageQualTA + #2.64e-05 ***
-              YearBuilt + #6.75e-05 *** #<--in both
-              # PoolQCFa + #8.59e-05 ***
-              # PoolQCGd + #0.000339 ***
-              Condition1Norm + #9.67e-05 ***
-              MasVnrArea + #0.000204 *** #<--in both
-              LandSlopeSev + #0.000260 ***
-              BsmtFinSF2 + #0.000338 ***
-              GarageCondTA + #0.000451 ***
-              GarageCondFa + #0.000667 ***
-              # GarageCondGd + #0.000872 ***
-              #
-              ScreenPorch + #0.003963 **
-              # PoolArea + #0.004163 **
-              MSZoningFV + #0.004912 **
-              RoofStyleShed + #.007314 **
-              LotConfigCulDSac + #0.007919 **
-              WoodDeckSF + #0.008967 **
-              StreetPave + #0.009917 **
-
+              #RoofMatlCompShg + #2e-16 ***
+              #RoofMatlMembran + #2e-16 ***
+              #RoofMatlMetal + #2e-16 ***
+              #RoofMatlRoll + #2e-16 ***
+              #RoofMatlTar.Grv + #2e-16 ***
+              #RoofMatlWdShake + #2e-16 ***
+              #RoofMatlWdShngl + #2e-16 ***
+              X2ndFlrSF + #2e-16 ***
+              X1stFlrSF + #5.8e-15 ***
+              BsmtFinSF1 + #1.35e-12 ***
+              LotArea + #1.56e-09 ***
+              KitchenQualGd + #1.92e-06 ***
+              YearBuilt + #1.52e-05 ***
+              BsmtUnfSF + #2.42e-05 ***
+              KitchenQualTA + #2.57e-05 ***
+              BsmtExposureGd + #4.46e-05 ***
+              NeighborhoodStoneBr + #0.000105 ***
+              OverallQual10 + #0.000194 ***
+              BsmtFinSF2 + #0.000212 ***
+              Condition1Norm + #0.000222 ***
+              ScreenPorch + #0.000412 ***
+              LandSlopeSev + #0.00049 ***
+              MSZoningFV + #0.000614 ***
+              #MSZoningRL + #0.000622 ***
+              BsmtQualGd + #0.000803 ***
+              #MSZoningRM + #0.000813 ***
+              #PoolQCFa + #0.000921 ***
+              #MasVnrArea + #0.002084 **
+              RoofStyleShed + #0.005024 **
+              MSZoningRH + #0.005106 **
+              #PoolQCGd + #0.005459 **
+              #NeighborhoodEdwards + #0.006674 **
+              GarageArea + #0.008497 **
+              #PoolArea + #0.009049 **
+              LotConfigCulDSac + #0.009108 **
+              KitchenQualFa + #0.011639 *
+              Fireplaces + #0.011664 *
               OverallQual9 + #0.012977 *
-              Fireplaces + #0.014309 * #<--in both
-              FenceNA + #0.015386 *
-              # FenceMnPrv + #0.016233 *
-              BedroomAbvGr + #0.019804 *
-              # SaleConditionNormal + #0.021169 *
-              # GarageArea + #0.021749 * #<--in both
-              # FunctionalTyp + #0.024499 *
-              BsmtFinType1GLQ + #0.026342 *
-              # BsmtCondPo + #0.029894 *
-              GarageTypeDetchd + #0.048381 *
+              SaleConditionNormal + #0.015183 *
+              FoundationWood + #0.017417 *
+              GarageTypeDetchd + #0.019292 *
+              NeighborhoodNoRidge + #0.021048 *
+              NeighborhoodMitchel + #0.023648 *
+              FireplaceQuNA + #0.025691 *
+              #GarageTypeBasment + #0.027843 *
+              KitchenAbvGr + #0.028201 *
+              BsmtFinType1GLQ + #0.030652 *
+              #GarageTypeAttchd + #0.03158 *
+              X3SsnPorch + #0.032375 *
+              StreetPave + #0.036155 *
+              FunctionalTyp + #0.036698 *
+              NeighborhoodNAmes + #0.037629 *
+              #LandSlopeMod + #0.039676 *
+              MoSold + #0.039938 *
+              #FireplaceQuPo + #0.040948 *
+              BsmtQualTA + #0.041567 *
+              #GarageQualFa + #0.042238 *
+              GarageTypeBuiltIn + #0.043626 *
+              NeighborhoodNWAmes + #0.044775 *
+              Condition1RRAn + #0.050091 .
+              WoodDeckSF + #0.053896 .
+              #Condition2RRAe + #0.055468 . #ERROR: object 'Condition2RRAe' not found
+              BsmtExposureNo + #0.05789 .
+              GarageQualTA + #0.060856 .
+              FullBath + #0.065037 .
+              GarageQualGd + #0.065551 .
+              GarageQualPo + #0.066676 .
+              #GarageTypeCarPort + #0.067736 .
+              #LandContourLvl + #0.072964 .
+              LotShapeIR2 + #0.075697 .
+              #PoolQCNA + #0.07675 .
+              #NeighborhoodNridgHt + #0.077902 .
+              FireplaceQuTA + #0.078805 .
+              LotConfigFR2 + #0.079863 .
+              #UtilitiesNoSeWa + #0.080384 .
+              HouseStyle2Story + #0.082891 .
+              Condition1PosN + #0.083065 .
+              BsmtFinType2BLQ + #0.092605 .
+              FireplaceQuGd + #0.092895 .
+              FenceNA + #0.094496 .
+              FenceMnPrv + #0.095795 .
+              YearRemodAdd + #0.096592 .
+              BldgTypeDuplex + #NA
+              BsmtCondNA + #NA
+              #BsmtFinType1NA + #NA #WARN: prediction from a rank-deficient fit may be misleading
+              #ElectricalMix + #NA #ERROR: object 'ElectricalMix' not found
+              Exterior2ndCBlock + #NA
+              #GarageCondNA + #NA
+              #GarageFinishNA + #NA
+              #GarageQualNA + #NA
+              GrLivArea + #NA
+              #TotalBsmtSF + #NA #WARN: prediction from a rank-deficient fit may be misleading
 
-              MoSold + #0.050353 .
-              BsmtFinType2LwQ + #0.064031 .
-              YearRemodAdd + #0.065138 . #<--in both
-              FoundationWood + #0.070998 .
-              KitchenAbvGr + #0.075688 .
-              # TotRmsAbvGrd + #0.076535 . #<--in both
-              FullBath + #0.080060 . #<--in both
-              BsmtFinType2BLQ + #0.080396 .
-              # HeatingQCGd + #0.083424 .
-              # GarageCars + #0.093282 . #<--in both
-              HouseStyle2Story + #0.096509 .
-
-              GrLivArea, #0.70862448 #keep this one last since I know it will be in there
+              Condition2PosN,# + #2e-16 *** #the first shall be last
             data=data))
 }
 
@@ -143,7 +171,7 @@ computeError = function(y, yhat) {
 
 #Globals
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_addSig'
+FILENAME = 'lm_newSig'
 PROD_RUN = T
 
 source('source/_getData.R')

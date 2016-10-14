@@ -14,7 +14,7 @@ sigMap = {
 }
 
 def parseLine(line):
-    sp = filter(None, line.replace('< 2e-16', '<2e-16').split(' '))
+    sp = filter(None, line.replace('< 2e-16', '2e-16').split(' '))
     featureName = sp[0]
     if len(sp) < 6:
         return (featureName, 0)

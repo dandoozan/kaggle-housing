@@ -96,6 +96,9 @@ getData = function(yName) {
   #do feature engineering
   full = featureEngineer(full)
 
+  #one hot encode factors
+  full = oneHotEncode(full)
+
   #split the data back into train and test
   train = full[1:nrow(train),]
   test = full[(nrow(train)+1):nrow(full), names(full) != yName]

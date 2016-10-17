@@ -3,11 +3,11 @@
 
 #Plot learning curve
 #E.g. plotLearningCurve(train, 'SalePrice', createModel, createPrediction, computeError, save=PROD_RUN)
-plotLearningCurve = function(data, y, createModel, createPrediction, computeError, increment=5, startIndex=increment, ylim=NULL, save=FALSE) {
+plotLearningCurve = function(data, yName, xNames, createModel, createPrediction, computeError, increment=5, startIndex=increment, ylim=NULL, save=FALSE) {
   cat('Plotting learning curve...\n')
 
   #split data into train and cv
-  split = splitData(data, y)
+  split = splitData(data, yName)
   train = split$train
   cv = split$cv
 
@@ -19,15 +19,15 @@ plotLearningCurve = function(data, y, createModel, createPrediction, computeErro
   count = 1
   found=F #tbx
   for (i in increments) {
-    if (i %% 100 == 0) cat('    On training example ', i, '\n', sep='')
+    if (i %% 200 == 0) cat('    On training example ', i, '\n', sep='')
     trainSubset = train[1:i,]
 
     #tbx
     #print(names(Filter(function(x) (is.factor(x) && length(levels(x)) < 2), trainSubset)))
 
-    model = createModel(trainSubset)
-    trainErrors[count] = computeError(trainSubset[[y]], createPrediction(model, trainSubset))
-    cvErrors[count] = computeError(cv[[y]], createPrediction(model, cv))
+    model = createModel(trainSubset, yName, xNames)
+    trainErrors[count] = computeError(trainSubset[[yName]], createPrediction(model, trainSubset))
+    cvErrors[count] = computeError(cv[[yName]], createPrediction(model, cv))
 
     #tbx
     # if (cvErrors[count] > 0.5 && !found) {

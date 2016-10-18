@@ -16,7 +16,7 @@ splitData = function(data, yName) {
 
   #split data into train and cv
   set.seed(837)
-  partitionIndices = caret::createDataPartition(data[[yName]], p=0.8, list=FALSE)
+  partitionIndices = caret::createDataPartition(data[[yName]], p=0.5, list=FALSE)
   train = data[partitionIndices,]
   cv = data[-partitionIndices,]
   return(list(train=train, cv=cv))
@@ -52,15 +52,14 @@ findBestSetOfFeatures = function(data, yName, createModel, createPrediction, com
   for (name in featuresNamesToTry) {
     if (verbose) cat(name, '\n')
     tempFeatureNames = c(featuresToUse, name)
-    trnCvErrors = suppressWarnings(computeTrainCVErrors(data, yName, tempFeatureNames, createModel, createPrediction, computeError))
-    trnError = trnCvErrors$train
-    cvError = trnCvErrors$cv
-
     model = createModel(data, yName, tempFeatureNames)
     tempTrainError = tryCatch(computeError(data[[yName]], createPrediction(model, data)),
                           warning=function(w) w)
     if (!is(tempTrainError, 'warning')) {
       trainError = tempTrainError
+      trnCvErrors = suppressWarnings(computeTrainCVErrors(data, yName, tempFeatureNames, createModel, createPrediction, computeError))
+      trnError = trnCvErrors$train
+      cvError = trnCvErrors$cv
       if (verbose) cat('   errors:', trnError, cvError, trainError)
 
       if (trnError < prevTrnError && cvError < prevCvError && trainError < prevTrainError) {
@@ -73,13 +72,13 @@ findBestSetOfFeatures = function(data, yName, createModel, createPrediction, com
         if (verbose) cat('         discarding')
       }
     } else {
-      if (verbose) cat('       got warning')
+      if (verbose) cat('    got warning')
     }
     if (verbose) cat('\n')
   }
 
 
   cat('    Number of features to use: ', length(featuresToUse), '/', length(allFeatureNames), '\n')
-  cat('    Final Errors (Trn/CV, Train): ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
+  cat('    Final Errors (Trn/CV, Train): ', prevTrnError, '/', prevCvError, ', ', prevTrainError, '\n', sep='')
   return(featuresToUse)
 }

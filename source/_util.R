@@ -16,7 +16,7 @@ splitData = function(data, yName) {
 
   #split data into train and cv
   set.seed(837)
-  partitionIndices = caret::createDataPartition(data[[yName]], p=0.5, list=FALSE)
+  partitionIndices = caret::createDataPartition(data[[yName]], p=0.8, list=FALSE)
   train = data[partitionIndices,]
   cv = data[-partitionIndices,]
   return(list(train=train, cv=cv))

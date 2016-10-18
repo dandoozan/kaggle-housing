@@ -16,7 +16,8 @@
 #D-Add high-correlation features: lm_addCorr, 0.1551667/0.1333876, 0.1500612, 0.18435
 #D-Find set of features to use automatically: lm_autoFeatures: numFeatures=39, 0.1656297/0.1459447, 0.1602873, 0.17735
 #D-Use mice to impute missing values: lm_mice: 41, 0.1619088/0.1451876, 0.1562768, 0.17645
-#-Change trn/cv ratio to same as train/test (0.5 instead of 0.8): lm_ratio05: 34, 0.1689338/0.1658276, 0.1610147, 0.18286
+#D-Change trn/cv ratio to same as train/test (0.5 instead of 0.8): lm_ratio05: 34, 0.1689338/0.1658276, 0.1610147, 0.18286
+#D-Change ratio back to 0.8: lm_ratio08: 41, 0.1619088/0.1451876, 0.1562768, 0.17645
 #-Make interaction features b/n highly-correlated features
 #-Perhaps do multiple rounds in findBestSetOfFeatures
 #-Try Kernel Ridge Regression, whatever that is
@@ -65,7 +66,7 @@ computeError = function(y, yhat) {
 
 #Globals
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_ratio05'
+FILENAME = 'lm_ratio08'
 PROD_RUN = T
 
 source('source/_getData.R')

@@ -14,8 +14,9 @@
 #D-Make another pass adding sig features: lm_addSig: 0.1659369/0.1486695, 0.1619065, 0.17769
 #D-Made 2 passes with new sig rankings: lm_newSig: 0.1543123/0.1343682, 0.1496322, 0.18712
 #D-Add high-correlation features: lm_addCorr, 0.1551667/0.1333876, 0.1500612, 0.18435
-#D-Find set of features to use autmotically: lm_autoFeatures: 0.1656297/0.1459447, 0.1602873, 0.17735
-#-Use mice instead of na.roughfix to impute missing values
+#D-Find set of features to use automatically: lm_autoFeatures: numFeatures=??, 0.1656297/0.1459447, 0.1602873, 0.17735
+#D-Use mice to impute missing values: lm_mice: 41, 0.1619088/0.1451876, 0.1562768, 0.17645
+#-Perhaps do multiple rounds in findBestSetOfFeatures
 #-make new features from the interaction b/n highly-correlated features (eg. train$year_qual = train$YearBuilt*train$OverallQual)
 #-Try Kernel Ridge Regression, whatever that is
 #-Try lasso
@@ -63,7 +64,7 @@ computeError = function(y, yhat) {
 
 #Globals
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_autoFeatures'
+FILENAME = 'lm_mice'
 PROD_RUN = T
 
 source('source/_getData.R')

@@ -4,12 +4,6 @@ removeCols = function(data, colNames) {
   return(data[, colsToKeep])
 }
 
-#Get the names of X columns
-getXNames = function(data, yName) {
-  allNames = names(data)
-  return(allNames[allNames != yName])
-}
-
 splitData = function(data, yName) {
   require(caret) #createDataPartition
 

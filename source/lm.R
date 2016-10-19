@@ -67,12 +67,11 @@ computeError = function(y, yhat) {
 #3. Iterate through the rest of the features in order of increasing p-value
 #4. For each feature, check if adding it results in a lower trnError, cvError, and trainError.
 #5. If it lowers all 3 errors, then add it to the list of features to use, else, discard it
-findBestSetOfFeatures = function(data, yName, createModel, createPrediction, computeError, verbose=T) {
+findBestSetOfFeatures = function(data, possibleFeatures, yName, createModel, createPrediction, computeError, verbose=T) {
   cat('Finding best set of features to use...\n')
 
-  sortedPValues = sort(summary(createModel(data, yName))$coefficients[,4])
-  allFeatureNames = getXNames(data, yName)
-  naFeatureNames = setdiff(allFeatureNames, names(sortedPValues))
+  sortedPValues = sort(summary(createModel(data, yName, possibleFeatures))$coefficients[,4])
+  naFeatureNames = setdiff(possibleFeatures, names(sortedPValues))
 
   featuresNamesToTry = c(names(Filter(function(x) x < 0.1, sortedPValues)), naFeatureNames)
 
@@ -109,7 +108,7 @@ findBestSetOfFeatures = function(data, yName, createModel, createPrediction, com
   }
 
 
-  cat('    Number of features to use: ', length(featuresToUse), '/', length(allFeatureNames), '\n')
+  cat('    Number of features to use: ', length(featuresToUse), '/', length(possibleFeatures), '\n')
   cat('    Final Errors (Trn/CV, Train): ', prevTrnError, '/', prevCvError, ', ', prevTrainError, '\n', sep='')
   return(featuresToUse)
 }
@@ -120,14 +119,15 @@ findBestSetOfFeatures = function(data, yName, createModel, createPrediction, com
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
 FILENAME = 'lm_ratio08'
-PROD_RUN = T
+PROD_RUN = F
 
 data = getData(Y_NAME, oneHotEncode=T)
 train = data$train
 test = data$test
+possibleFeatures = setdiff(names(train), c(ID_NAME, Y_NAME))
 
 #find best set of features to use based on cv error
-featuresToUse = findBestSetOfFeatures(train, Y_NAME, createModel, createPrediction, computeError, verbose=F)
+featuresToUse = findBestSetOfFeatures(train, possibleFeatures, Y_NAME, createModel, createPrediction, computeError, verbose=F)
 
 #plot learning curve, and suppress those pesky "prediction from a rank-deficient fit may be misleading" warnings
 suppressWarnings(plotLearningCurve(train, Y_NAME, featuresToUse, createModel, createPrediction, computeError, ylim=c(0, 0.4), save=PROD_RUN))

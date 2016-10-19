@@ -1,6 +1,13 @@
 #todo:
 #Read: https://www.kaggle.com/endintears/house-prices-advanced-regression-techniques/simple-random-forest/code
-#-Use all features: rf_all: Trn/Cv Error=0.06576678/0.1449745, Train Error=0.06394271, Score=0.15308
+#D-Use all features: rf_all: NumFeaturesUsed=80/80, Trn/Cv Error=0.06576678/0.1449745, Train Error=0.06394271, Score=0.15308
+#D-Try using different values for ntree (nope: it made trn and cv errors worse)
+#D-Use one hot encoded features (nope: it didn't make anything better: 0.06895515/0.1489397, 0.06599618)
+#D-Try using top X features based on feature importances (nothin: it just makes higher trn and cv errors (although they are closer together sometimes))
+#D-Remove Id as a feature: rf_-Id: 79/79, 0.06545684/0.1441382, 0.06373601, 0.15344
+#-Figure out why i'm overfitting
+#-Try getting top features from that thing mentioned in kaggle posts
+
 
 #Remove all objects from the current workspace
 rm(list = ls())
@@ -18,7 +25,9 @@ source('source/_util.R')
 
 createModel = function(data, yName, xNames='.') {
   set.seed(754)
-  return(randomForest(as.formula(paste(yName, '~', paste(xNames, collapse='+'))), data=data))
+  return(randomForest(as.formula(paste(yName, '~', paste(xNames, collapse='+'))),
+                      data=data,
+                      ntree=500))
 }
 
 createPrediction = function(model, newData) {
@@ -54,19 +63,14 @@ plotImportances = function(model, save=FALSE) {
   if (save) dev.off()
 }
 
-#This returns the top 10 features based on feature importances
-findBestSetOfFeatures = function(data, yName, createModel) {
+findBestSetOfFeatures = function(data, possibleFeatures, yName, createModel) {
   cat('Finding best set of features to use...\n')
 
-  featuresToUse = '.'
+  #use all features for now
+  featuresToUse = possibleFeatures
 
-  # numTopFeatures = 10
-  #
-  # model = createModel(data, yName)
-  # sortedImportances = sort(importance(model)[,1], decreasing=T)
-  # featuresToUse = names(sortedImportances[1:numTopFeatures])
-
-  cat('   Features to use:', paste(featuresToUse, collapse=', '), '\n')
+  cat('    Number of features to use: ', length(featuresToUse), '/', length(possibleFeatures), '\n')
+  #cat('    Features to use:', paste(featuresToUse, collapse=', '), '\n')
   return(featuresToUse)
 }
 
@@ -75,22 +79,23 @@ findBestSetOfFeatures = function(data, yName, createModel) {
 #Globals
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
-FILENAME = 'rf_all'
+FILENAME = 'rf_-Id'
 PROD_RUN = T
 PLOT = 'lc' #lc=learning curve, fi=feature importances
 
 data = getData(Y_NAME, oneHotEncode=F)
 train = data$train
 test = data$test
+possibleFeatures = setdiff(names(train), c(ID_NAME, Y_NAME))
 
 # #find best set of features to use based on cv error
-featuresToUse = findBestSetOfFeatures(train, Y_NAME, createModel)
+featuresToUse = findBestSetOfFeatures(train, possibleFeatures, Y_NAME, createModel)
 
 cat('Creating Random Forest...\n')
 model = createModel(train, Y_NAME, featuresToUse)
 
 #plots
-if (PROD_RUN || PLOT=='lc') plotLearningCurve(train, Y_NAME, featuresToUse, createModel, createPrediction, computeError, increment=100, save=PROD_RUN)
+if (PROD_RUN || PLOT=='lc') plotLearningCurve(train, Y_NAME, featuresToUse, createModel, createPrediction, computeError, increment=100, ylim=c(0, 0.3), save=PROD_RUN)
 if (PROD_RUN || PLOT=='fi') plotImportances(model, save=PROD_RUN)
 
 #print trn/cv, train error

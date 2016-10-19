@@ -6,9 +6,8 @@
 #D-Try using top X features based on feature importances (nothin: it just makes higher trn and cv errors (although they are closer together sometimes))
 #D-Remove Id as a feature: rf_-Id: 79/79, 0.06545684/0.1441382, 0.06373601, 0.15344
 #D-Use Boruta confirmed features: rf_borutaConfirmed: 48, 0.06497725/0.1444829, 0.06406024, 0.15359
-#-Use Boruta confirmed+tentative features:
+#D-Use Boruta confirmed+tentative features: rf_borutaConfirmedTentative: 60, 0.06428625/0.1440843, 0.06317321, 0.15280
 #-Figure out why i'm overfitting
-
 
 
 #Remove all objects from the current workspace
@@ -69,11 +68,11 @@ findBestSetOfFeatures = function(data, possibleFeatures, yName, createModel) {
   cat('Finding best set of features to use...\n')
 
   #boruta features
-  borutaConfirmedFeatures = c('MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'LandContour', 'Neighborhood', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'Exterior1st', 'Exterior2nd', 'MasVnrArea', 'ExterQual', 'Foundation', 'BsmtQual', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtUnfSF', 'TotalBsmtSF', 'HeatingQC', 'CentralAir', 'X1stFlrSF', 'X2ndFlrSF', 'GrLivArea', 'BsmtFullBath', 'FullBath', 'HalfBath', 'BedroomAbvGr', 'KitchenAbvGr', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageYrBlt', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF')
-  borutaTentativeFeatures = c('Alley', 'LotShape', 'LandSlope', 'Condition1', 'RoofStyle', 'MasVnrType', 'BsmtCond', 'Electrical', 'EnclosedPorch', 'ScreenPorch', 'Fence', 'SaleCondition')
-  borutaRejectedFeatures = c('Street', 'Utilities', 'LotConfig', 'Condition2', 'RoofMatl', 'ExterCond', 'BsmtFinType2', 'BsmtFinSF2', 'Heating', 'LowQualFinSF', 'BsmtHalfBath', 'X3SsnPorch', 'PoolArea', 'PoolQC', 'MiscFeature', 'MiscVal', 'MoSold', 'YrSold', 'SaleType')
+  borutaConfirmed = c('MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'LandContour', 'Neighborhood', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'Exterior1st', 'Exterior2nd', 'MasVnrArea', 'ExterQual', 'Foundation', 'BsmtQual', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinSF1', 'BsmtUnfSF', 'TotalBsmtSF', 'HeatingQC', 'CentralAir', 'X1stFlrSF', 'X2ndFlrSF', 'GrLivArea', 'BsmtFullBath', 'FullBath', 'HalfBath', 'BedroomAbvGr', 'KitchenAbvGr', 'KitchenQual', 'TotRmsAbvGrd', 'Functional', 'Fireplaces', 'FireplaceQu', 'GarageType', 'GarageYrBlt', 'GarageFinish', 'GarageCars', 'GarageArea', 'GarageQual', 'GarageCond', 'PavedDrive', 'WoodDeckSF', 'OpenPorchSF')
+  borutaTentative = c('Alley', 'LotShape', 'LandSlope', 'Condition1', 'RoofStyle', 'MasVnrType', 'BsmtCond', 'Electrical', 'EnclosedPorch', 'ScreenPorch', 'Fence', 'SaleCondition')
+  borutaRejected = c('Street', 'Utilities', 'LotConfig', 'Condition2', 'RoofMatl', 'ExterCond', 'BsmtFinType2', 'BsmtFinSF2', 'Heating', 'LowQualFinSF', 'BsmtHalfBath', 'X3SsnPorch', 'PoolArea', 'PoolQC', 'MiscFeature', 'MiscVal', 'MoSold', 'YrSold', 'SaleType')
 
-  featuresToUse = borutaConfirmedFeatures
+  featuresToUse = c(borutaConfirmed, borutaTentative)
 
   cat('    Number of features to use: ', length(featuresToUse), '/', length(possibleFeatures), '\n')
   #cat('    Features to use:', paste(featuresToUse, collapse=', '), '\n')
@@ -85,9 +84,9 @@ findBestSetOfFeatures = function(data, possibleFeatures, yName, createModel) {
 #Globals
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
-FILENAME = 'rf_borutaConfirmed'
+FILENAME = 'rf_borutaConfirmedTentative'
 PROD_RUN = T
-PLOT = 'lc' #lc=learning curve, fi=feature importances
+PLOT = 'fi' #lc=learning curve, fi=feature importances
 
 data = getData(Y_NAME, oneHotEncode=F)
 train = data$train

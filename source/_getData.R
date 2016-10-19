@@ -1,10 +1,3 @@
-#todo:
-#D-fill NAs using roughfix
-#D-combine rare values in all factor cols
-#D-change NAs to -1s for GarageYrBlt before roughfix b/c the NAs represent no garage
-
-setwd('/Users/dan/Desktop/Kaggle/Housing')
-
 library(dplyr) #bind_rows
 library(randomForest) #na.roughfix
 library(caret) #dummyVars
@@ -131,7 +124,7 @@ featureEngineer = function(data) {
   return(data)
 }
 
-getData = function(yName) {
+getData = function(yName, oneHotEncode=F) {
 
   #read data from file as character
   data = loadData()
@@ -146,7 +139,9 @@ getData = function(yName) {
   full = featureEngineer(full)
 
   #one hot encode factors
-  full = oneHotEncode(full)
+  if (oneHotEncode) {
+    full = oneHotEncode(full)
+  }
 
   #split the data back into train and test
   train = full[1:nrow(train),]

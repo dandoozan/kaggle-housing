@@ -10,7 +10,6 @@ getXNames = function(data, yName) {
   return(allNames[allNames != yName])
 }
 
-
 splitData = function(data, yName) {
   require(caret) #createDataPartition
 
@@ -36,49 +35,12 @@ computeTrainCVErrors = function(data, yName, xNames, createModel, createPredicti
   return(list(train=trainError, cv=cvError))
 }
 
-findBestSetOfFeatures = function(data, yName, createModel, createPrediction, computeError, verbose=T) {
-  cat('Finding best set of features to use...\n')
-
-  sortedPValues = sort(summary(createModel(data, yName))$coefficients[,4])
-  allFeatureNames = getXNames(data, yName)
-  naFeatureNames = setdiff(allFeatureNames, names(sortedPValues))
-
-  featuresNamesToTry = c(names(Filter(function(x) x < 0.1, sortedPValues)), naFeatureNames)
-
-  featuresToUse = c()
-  prevTrnError = Inf
-  prevCvError = Inf
-  prevTrainError = Inf
-  for (name in featuresNamesToTry) {
-    if (verbose) cat(name, '\n')
-    tempFeatureNames = c(featuresToUse, name)
-    model = createModel(data, yName, tempFeatureNames)
-    tempTrainError = tryCatch(computeError(data[[yName]], createPrediction(model, data)),
-                          warning=function(w) w)
-    if (!is(tempTrainError, 'warning')) {
-      trainError = tempTrainError
-      trnCvErrors = suppressWarnings(computeTrainCVErrors(data, yName, tempFeatureNames, createModel, createPrediction, computeError))
-      trnError = trnCvErrors$train
-      cvError = trnCvErrors$cv
-      if (verbose) cat('   errors:', trnError, cvError, trainError)
-
-      if (trnError < prevTrnError && cvError < prevCvError && trainError < prevTrainError) {
-        #keep the new feature
-        featuresToUse = c(featuresToUse, name)
-        prevTrnError = trnError
-        prevCvError = cvError
-        prevTrainError = trainError
-      } else {
-        if (verbose) cat('         discarding')
-      }
-    } else {
-      if (verbose) cat('    got warning')
-    }
-    if (verbose) cat('\n')
-  }
-
-
-  cat('    Number of features to use: ', length(featuresToUse), '/', length(allFeatureNames), '\n')
-  cat('    Final Errors (Trn/CV, Train): ', prevTrnError, '/', prevCvError, ', ', prevTrainError, '\n', sep='')
-  return(featuresToUse)
+outputSolution = function(model, testData, idName, yName, filename) {
+  cat('Outputing solution...\n')
+  cat('    Creating prediction...\n')
+  prediction = createPrediction(model, testData)
+  solution = data.frame(testData[[idName]], prediction)
+  colnames(solution) = c(idName, yName)
+  cat('    Writing solution to file: ', filename, '...\n', sep='')
+  write.csv(solution, file=filename, row.names=F)
 }

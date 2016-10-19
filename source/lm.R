@@ -18,13 +18,11 @@
 #D-Use mice to impute missing values: lm_mice: 41, 0.1619088/0.1451876, 0.1562768, 0.17645
 #D-Change trn/cv ratio to same as train/test (0.5 instead of 0.8): lm_ratio05: 34, 0.1689338/0.1658276, 0.1610147, 0.18286
 #D-Change ratio back to 0.8: lm_ratio08: 41, 0.1619088/0.1451876, 0.1562768, 0.17645
-#-Make interaction features b/n highly-correlated features
+#-Maybe make new features from interactions b/n highly-correlated features
 #-Perhaps do multiple rounds in findBestSetOfFeatures
 #-Try Kernel Ridge Regression, whatever that is
 #-Try lasso
 #-Try ridge
-#-Experiment with more features
-#-Read more forum posts
 #-handle negative values better somehow
 
 
@@ -34,6 +32,7 @@ setwd('/Users/dan/Desktop/Kaggle/Housing')
 
 
 library(hydroGOF) #rmse
+source('source/_getData.R')
 source('source/_plot.R')
 source('source/_util.R')
 
@@ -62,15 +61,68 @@ computeError = function(y, yhat) {
   return(rmse(log(y), log(yhat)))
 }
 
+#This finds the best set of features using the following technique:
+#1. Get p-value of all features
+#2. Start with the most significant feature (the one with the lowest p-value)
+#3. Iterate through the rest of the features in order of increasing p-value
+#4. For each feature, check if adding it results in a lower trnError, cvError, and trainError.
+#5. If it lowers all 3 errors, then add it to the list of features to use, else, discard it
+findBestSetOfFeatures = function(data, yName, createModel, createPrediction, computeError, verbose=T) {
+  cat('Finding best set of features to use...\n')
+
+  sortedPValues = sort(summary(createModel(data, yName))$coefficients[,4])
+  allFeatureNames = getXNames(data, yName)
+  naFeatureNames = setdiff(allFeatureNames, names(sortedPValues))
+
+  featuresNamesToTry = c(names(Filter(function(x) x < 0.1, sortedPValues)), naFeatureNames)
+
+  featuresToUse = c()
+  prevTrnError = Inf
+  prevCvError = Inf
+  prevTrainError = Inf
+  for (name in featuresNamesToTry) {
+    if (verbose) cat(name, '\n')
+    tempFeatureNames = c(featuresToUse, name)
+    model = createModel(data, yName, tempFeatureNames)
+    tempTrainError = tryCatch(computeError(data[[yName]], createPrediction(model, data)),
+                              warning=function(w) w)
+    if (!is(tempTrainError, 'warning')) {
+      trainError = tempTrainError
+      trnCvErrors = suppressWarnings(computeTrainCVErrors(data, yName, tempFeatureNames, createModel, createPrediction, computeError))
+      trnError = trnCvErrors$train
+      cvError = trnCvErrors$cv
+      if (verbose) cat('   errors:', trnError, cvError, trainError)
+
+      if (trnError < prevTrnError && cvError < prevCvError && trainError < prevTrainError) {
+        #keep the new feature
+        featuresToUse = c(featuresToUse, name)
+        prevTrnError = trnError
+        prevCvError = cvError
+        prevTrainError = trainError
+      } else {
+        if (verbose) cat('         discarding')
+      }
+    } else {
+      if (verbose) cat('    got warning')
+    }
+    if (verbose) cat('\n')
+  }
+
+
+  cat('    Number of features to use: ', length(featuresToUse), '/', length(allFeatureNames), '\n')
+  cat('    Final Errors (Trn/CV, Train): ', prevTrnError, '/', prevCvError, ', ', prevTrainError, '\n', sep='')
+  return(featuresToUse)
+}
+
 #============= Main ================
 
 #Globals
+ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
 FILENAME = 'lm_ratio08'
 PROD_RUN = T
 
-source('source/_getData.R')
-data = getData(Y_NAME)
+data = getData(Y_NAME, oneHotEncode=T)
 train = data$train
 test = data$test
 
@@ -91,14 +143,6 @@ cvError = trnCvErrors$cv
 trainError = computeError(train[[Y_NAME]], createPrediction(model, train, verbose=T))
 cat('    Trn/CV, Train: ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
 
-if (PROD_RUN) {
-  #Output solution
-  cat('Creating test prediction...\n')
-  prediction = createPrediction(model, test, verbose=T)
-  solution = data.frame(Id = test$Id, SalePrice = prediction)
-  outputFilename = paste0(FILENAME, '.csv')
-  cat('Writing solution to file: ', outputFilename, '...\n', sep='')
-  write.csv(solution, file=outputFilename, row.names=F)
-}
+if (PROD_RUN) outputSolution(model, test, ID_NAME, Y_NAME, paste0(FILENAME, '.csv'))
 
 cat('Done!\n')

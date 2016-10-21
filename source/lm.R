@@ -41,7 +41,7 @@ source('source/_util.R')
 
 createModel = function(data, yName, xNames='.') {
   set.seed(754)
-  return(lm(as.formula(paste(yName, '~', paste(xNames, collapse='+'))), data=data))
+  return(lm(getFormula(yName, xNames), data=data))
 }
 
 createPrediction = function(model, newData, verbose=F) {

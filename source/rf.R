@@ -26,7 +26,7 @@ source('source/_util.R')
 
 createModel = function(data, yName, xNames='.') {
   set.seed(754)
-  return(randomForest(as.formula(paste(yName, '~', paste(xNames, collapse='+'))),
+  return(randomForest(getFormula(yName, xNames),
                       data=data,
                       ntree=500))
 }
@@ -64,7 +64,7 @@ plotImportances = function(model, save=FALSE) {
   if (save) dev.off()
 }
 
-findBestSetOfFeatures = function(data, possibleFeatures, yName, createModel) {
+findBestSetOfFeatures = function(data, possibleFeatures) {
   cat('Finding best set of features to use...\n')
 
   #boruta features
@@ -85,7 +85,7 @@ findBestSetOfFeatures = function(data, possibleFeatures, yName, createModel) {
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
 FILENAME = 'rf_borutaConfirmedTentative'
-PROD_RUN = T
+PROD_RUN = F
 PLOT = 'fi' #lc=learning curve, fi=feature importances
 
 data = getData(Y_NAME, oneHotEncode=F)
@@ -93,8 +93,8 @@ train = data$train
 test = data$test
 possibleFeatures = setdiff(names(train), c(ID_NAME, Y_NAME))
 
-# #find best set of features to use based on cv error
-featuresToUse = findBestSetOfFeatures(train, possibleFeatures, Y_NAME, createModel)
+#find best set of features to use based on cv error
+featuresToUse = findBestSetOfFeatures(train, possibleFeatures)
 
 cat('Creating Random Forest...\n')
 model = createModel(train, Y_NAME, featuresToUse)

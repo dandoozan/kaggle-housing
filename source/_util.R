@@ -38,3 +38,7 @@ outputSolution = function(model, testData, idName, yName, filename) {
   cat('    Writing solution to file: ', filename, '...\n', sep='')
   write.csv(solution, file=filename, row.names=F)
 }
+
+getFormula = function(yName, xNames) {
+  return(as.formula(paste(yName, '~', paste(xNames, collapse='+'))))
+}

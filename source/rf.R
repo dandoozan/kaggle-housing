@@ -7,6 +7,7 @@
 #D-Remove Id as a feature: rf_-Id: 79/79, 0.06545684/0.1441382, 0.06373601, 0.15344
 #D-Use Boruta confirmed features: rf_borutaConfirmed: 48, 0.06497725/0.1444829, 0.06406024, 0.15359
 #D-Use Boruta confirmed+tentative features: rf_borutaConfirmedTentative: 60, 0.06428625/0.1440843, 0.06317321, 0.15280
+#D-Predict log(y) instead of y: rf_logy: 60, 0.05691862/0.1380704, 0.05604239, 0.14729
 #-Figure out why i'm overfitting
 
 
@@ -25,6 +26,10 @@ source('source/_util.R')
 #============== Functions ===============
 
 createModel = function(data, yName, xNames='.') {
+  #transform y -> log(y) because rf uses mse as internal error metric, and I'm wanting
+  #ultimately to have the smallest msle
+  data[[yName]] = log(data[[yName]])
+
   set.seed(754)
   return(randomForest(getFormula(yName, xNames),
                       data=data,
@@ -32,7 +37,8 @@ createModel = function(data, yName, xNames='.') {
 }
 
 createPrediction = function(model, newData) {
-  return(predict(model, newData))
+  #'exp' the prediction to convert it back to regular y since I'm using log(y) in the model
+  return(exp(predict(model, newData)))
 }
 
 computeError = function(y, yhat) {
@@ -84,9 +90,9 @@ findBestSetOfFeatures = function(data, possibleFeatures) {
 #Globals
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
-FILENAME = 'rf_borutaConfirmedTentative'
-PROD_RUN = F
-PLOT = 'fi' #lc=learning curve, fi=feature importances
+FILENAME = 'rf_logy'
+PROD_RUN = T
+PLOT = 'lc' #lc=learning curve, fi=feature importances
 
 data = getData(Y_NAME, oneHotEncode=F)
 train = data$train

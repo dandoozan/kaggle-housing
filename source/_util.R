@@ -29,7 +29,7 @@ computeTrainCVErrors = function(data, yName, xNames, createModel, createPredicti
   return(list(train=trainError, cv=cvError))
 }
 
-outputSolution = function(model, testData, idName, yName, filename) {
+outputSolution = function(createPrediction, model, testData, idName, yName, filename) {
   cat('Outputing solution...\n')
   cat('    Creating prediction...\n')
   prediction = createPrediction(model, testData)

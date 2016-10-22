@@ -14,15 +14,16 @@
 #D-Make another pass adding sig features: lm_addSig: 0.1659369/0.1486695, 0.1619065, 0.17769
 #D-Made 2 passes with new sig rankings: lm_newSig: 0.1543123/0.1343682, 0.1496322, 0.18712
 #D-Add high-correlation features: lm_addCorr, 0.1551667/0.1333876, 0.1500612, 0.18435
-#D-Find set of features to use automatically: lm_autoFeatures: numFeatures=39, 0.1656297/0.1459447, 0.1602873, 0.17735
+#D-Find set of features to use automatically: lm_autoFeatures: numFeatures=39/295, 0.1656297/0.1459447, 0.1602873, 0.17735
 #D-Use mice to impute missing values: lm_mice: 41, 0.1619088/0.1451876, 0.1562768, 0.17645
 #D-Change trn/cv ratio to same as train/test (0.5 instead of 0.8): lm_ratio05: 34, 0.1689338/0.1658276, 0.1610147, 0.18286
 #D-Change ratio back to 0.8: lm_ratio08: 41, 0.1619088/0.1451876, 0.1562768, 0.17645
+#D-Predict log(y) instead of y: lm_logy: 67, 0.1424959/0.1121368, 0.136559, 0.15503 <-- New best!
 #-Maybe make new features from interactions b/n highly-correlated features
 #-Perhaps do multiple rounds in findBestSetOfFeatures
-#-Try Kernel Ridge Regression, whatever that is
-#-Try lasso
+#-Try lasso: https://www.kaggle.com/jiashenliu/house-prices-advanced-regression-techniques/updated-xgboost-with-parameter-tuning/run/362252
 #-Try ridge
+#-Try Kernel Ridge Regression, whatever that is
 #-handle negative values better somehow
 
 
@@ -40,12 +41,14 @@ source('source/_util.R')
 #============== Functions ===============
 
 createModel = function(data, yName, xNames='.') {
+  data[[yName]] = log(data[[yName]])
+
   set.seed(754)
   return(lm(getFormula(yName, xNames), data=data))
 }
 
 createPrediction = function(model, newData, verbose=F) {
-  prediction = predict(model, newData, type='response')
+  prediction = exp(predict(model, newData, type='response'))
   minY = min(prediction)
   if (minY <= 0) {
     amountToAdd = (-minY) + 1
@@ -118,8 +121,8 @@ findBestSetOfFeatures = function(data, possibleFeatures, yName, createModel, cre
 #Globals
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
-FILENAME = 'lm_ratio08'
-PROD_RUN = F
+FILENAME = 'lm_logy'
+PROD_RUN = T
 
 data = getData(Y_NAME, oneHotEncode=T)
 train = data$train
@@ -143,6 +146,6 @@ cvError = trnCvErrors$cv
 trainError = computeError(train[[Y_NAME]], createPrediction(model, train, verbose=T))
 cat('    Trn/CV, Train: ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
 
-if (PROD_RUN) outputSolution(model, test, ID_NAME, Y_NAME, paste0(FILENAME, '.csv'))
+if (PROD_RUN) outputSolution(createPrediction, model, test, ID_NAME, Y_NAME, paste0(FILENAME, '.csv'))
 
 cat('Done!\n')

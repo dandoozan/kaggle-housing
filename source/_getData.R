@@ -68,7 +68,7 @@ setValues = function(dataCol, rowIndices, values) {
 }
 
 imputeMissingValues = function(data) {
-  cat('Imputing missing values...\n')
+  cat('    Imputing missing values...\n')
 
   #to investigate:
     #-LotFrontage: should be numbers, but has 259 NAs in train, 227 NAs in test - use mice
@@ -113,8 +113,8 @@ imputeMissingValues = function(data) {
   return(data)
 }
 
-
 oneHotEncode = function(data) {
+  cat('    One hot encoding variables...\n')
   dmy = caret::dummyVars('~.', data, fullRank=T)
   data = data.frame(predict(dmy, data))
   return(data)
@@ -125,6 +125,7 @@ featureEngineer = function(data) {
 }
 
 getData = function(yName, oneHotEncode=F) {
+  cat('Getting data...\n')
 
   #read data from file as character
   data = loadData()
@@ -139,6 +140,11 @@ getData = function(yName, oneHotEncode=F) {
   full = featureEngineer(full)
 
   #one hot encode factors
+  #todo: perhaps one-hot-encode train and test separately.  I believe the reason
+  #to do it separate is so that I don't 'leak' information to the train set when
+  #there is a factor value in test that is not in train (but this would result in
+  #an all-0s column for train, which wouldn't be used, so I'm not sure how big of
+  #a problem the leaking information is).  For now, keep one-hot-encoding them together
   if (oneHotEncode) {
     full = oneHotEncode(full)
   }

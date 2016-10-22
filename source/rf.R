@@ -117,6 +117,6 @@ cvError = trnCvErrors$cv
 trainError = computeError(train[[Y_NAME]], createPrediction(model, train))
 cat('    Trn/CV, Train: ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
 
-if (PROD_RUN) outputSolution(model, test, ID_NAME, Y_NAME, paste0(FILENAME, '.csv'))
+if (PROD_RUN) outputSolution(createPrediction, model, test, ID_NAME, Y_NAME, paste0(FILENAME, '.csv'))
 
 cat('Done!\n')

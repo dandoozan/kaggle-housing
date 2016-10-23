@@ -20,9 +20,8 @@
 rm(list = ls())
 setwd('/Users/dan/Desktop/Kaggle/Housing')
 
-library(xgboost)
-library(Matrix) #sparse.model.matrix
-library(caret) #createDataPartition
+library(xgboost) #xgb.train, xgb.cv
+library(caret) #dummyVars
 library(Ckmeans.1d.dp) #xgb.plot.importance
 library(hydroGOF) #rmse
 source('source/_getData.R')
@@ -175,7 +174,7 @@ getDMatrix = function(data, yName, xNames) {
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
 FILENAME = 'xgb_dummyVars'
-PROD_RUN = T
+PROD_RUN = F
 PLOT = 'cv' #cv=cv errors, lc=learning curve, fi=feature importances
 
 data = getData(Y_NAME, oneHotEncode=F)
@@ -207,12 +206,7 @@ if (PROD_RUN || PLOT=='lc') plotLearningCurve(train, Y_NAME, featuresToUse, crea
 if (PROD_RUN || PLOT=='fi') plotFeatureImportances(model, featuresToUse, save=PROD_RUN)
 
 #print trn/cv, train error
-cat('Computing Errors...\n')
-trnCvErrors = computeTrainCVErrors(train, Y_NAME, featuresToUse, createModel, createPrediction, computeError)
-trnError = trnCvErrors$train
-cvError = trnCvErrors$cv
-trainError = computeError(train[, Y_NAME], createPrediction(model, train, featuresToUse))
-cat('    Trn/CV, Train: ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
+printTrnCvTrainErrors(model, train, Y_NAME, featuresToUse, createModel, createPrediction, computeError)
 
 if (PROD_RUN) outputSolution(createPrediction, model, test, ID_NAME, Y_NAME, featuresToUse, paste0(FILENAME, '.csv'))
 

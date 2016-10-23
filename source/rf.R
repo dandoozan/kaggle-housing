@@ -92,7 +92,7 @@ ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
 FILENAME = 'rf_logy'
 PROD_RUN = F
-PLOT = 'lc' #lc=learning curve, fi=feature importances
+PLOT = '' #lc=learning curve, fi=feature importances
 
 data = getData(Y_NAME, oneHotEncode=F)
 train = data$train
@@ -110,12 +110,7 @@ if (PROD_RUN || PLOT=='lc') plotLearningCurve(train, Y_NAME, featuresToUse, crea
 if (PROD_RUN || PLOT=='fi') plotImportances(model, save=PROD_RUN)
 
 #print trn/cv, train error
-cat('Computing Errors...\n')
-trnCvErrors = computeTrainCVErrors(train, Y_NAME, featuresToUse, createModel, createPrediction, computeError)
-trnError = trnCvErrors$train
-cvError = trnCvErrors$cv
-trainError = computeError(train[[Y_NAME]], createPrediction(model, train))
-cat('    Trn/CV, Train: ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
+printTrnCvTrainErrors(model, train, Y_NAME, featuresToUse, createModel, createPrediction, computeError)
 
 if (PROD_RUN) outputSolution(createPrediction, model, test, ID_NAME, Y_NAME, featuresToUse, paste0(FILENAME, '.csv'))
 

@@ -139,12 +139,7 @@ cat('Creating Linear Model...\n')
 model = createModel(train, Y_NAME, featuresToUse)
 
 #print trn/cv, train error
-cat('Computing Errors...\n')
-trnCvErrors = computeTrainCVErrors(train, Y_NAME, featuresToUse, createModel, createPrediction, computeError)
-trnError = trnCvErrors$train
-cvError = trnCvErrors$cv
-trainError = computeError(train[[Y_NAME]], createPrediction(model, train, verbose=T))
-cat('    Trn/CV, Train: ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
+printTrnCvTrainErrors(model, train, Y_NAME, featuresToUse, createModel, createPrediction, computeError)
 
 if (PROD_RUN) outputSolution(createPrediction, model, test, ID_NAME, Y_NAME, featuresToUse, paste0(FILENAME, '.csv'))
 

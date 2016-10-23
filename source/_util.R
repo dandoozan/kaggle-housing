@@ -15,6 +15,10 @@ splitData = function(data, yName) {
   return(list(train=train, cv=cv))
 }
 
+getFormula = function(yName, xNames) {
+  return(as.formula(paste(yName, '~', paste(xNames, collapse='+'))))
+}
+
 computeTrainCVErrors = function(data, yName, xNames, createModel, createPrediction, computeError) {
   #split data into train, cv
   split = splitData(data, yName)
@@ -29,6 +33,15 @@ computeTrainCVErrors = function(data, yName, xNames, createModel, createPredicti
   return(list(train=trainError, cv=cvError))
 }
 
+printTrnCvTrainErrors = function(model, data, yName, xNames, createModel, createPrediction, computeError) {
+  cat('Computing Errors...\n')
+  trnCvErrors = computeTrainCVErrors(data, yName, xNames, createModel, createPrediction, computeError)
+  trnError = trnCvErrors$train
+  cvError = trnCvErrors$cv
+  trainError = computeError(data[, yName], createPrediction(model, data, xNames))
+  cat('    Trn/CV, Train: ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
+}
+
 outputSolution = function(createPrediction, model, testData, idName, yName, xNames, filename) {
   cat('Outputing solution...\n')
   cat('    Creating prediction...\n')
@@ -39,6 +52,4 @@ outputSolution = function(createPrediction, model, testData, idName, yName, xNam
   write.csv(solution, file=filename, row.names=F)
 }
 
-getFormula = function(yName, xNames) {
-  return(as.formula(paste(yName, '~', paste(xNames, collapse='+'))))
-}
+

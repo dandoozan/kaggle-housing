@@ -7,14 +7,12 @@
 #D-Use caret::dummyVars to one-hot-encode: xgb_dummyVars:
   #NumFeaturesUsed=295/295, 1, 0.008649, 0.146446, 266, 103, 0.008649, 0.146446
   #0.009038904/0.1433992, 0.01297175, 0.14155
-#-Try one hot encoding train and test together
 #-Recompute boruta now that im predicting log(y) instead of y
 #-Tune earlyStopRound in findBestSeedAndNrounds
 #-Tune hyperparams
 #-Try Boruta features
 #-Read (for finding best params): https://www.kaggle.com/jiashenliu/house-prices-advanced-regression-techniques/updated-xgboost-with-parameter-tuning/run/362252/comments#135758
 #-Try dummyVars fullRank=F
-#-Move print trn/cv, train errors to util function
 
 #Remove all objects from the current workspace
 rm(list = ls())
@@ -158,11 +156,6 @@ findBestSetOfFeatures = function(data, possibleFeatures) {
   return(featuresToUse)
 }
 
-getSparseMatrix = function(data) {
-  dmy = caret::dummyVars('~.', data, fullRank=T)
-  return(predict(dmy, data))
-}
-
 getDMatrix = function(data, yName, xNames) {
   set.seed(634)
   return(xgb.DMatrix(data=data[, xNames], label=log(data[, yName])))
@@ -175,16 +168,12 @@ ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
 FILENAME = 'xgb_dummyVars'
 PROD_RUN = F
-PLOT = 'cv' #cv=cv errors, lc=learning curve, fi=feature importances
+PLOT = '' #cv=cv errors, lc=learning curve, fi=feature importances
 
-data = getData(Y_NAME, oneHotEncode=F)
-train = data$train
-test = data$test
-
-#todo: remove this and just use the oneHotEncode param in getData
-#convert data to sparse matrix
-train = getSparseMatrix(train)
-test = getSparseMatrix(test)
+data = getData(Y_NAME, oneHotEncode=T)
+#convert to matrix b/c xgb.train requires a matrix to be passed to it
+train = as.matrix(data$train)
+test = as.matrix(data$test)
 
 possibleFeatures = setdiff(colnames(train), c(ID_NAME, Y_NAME))
 

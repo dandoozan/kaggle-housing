@@ -9,7 +9,7 @@ splitData = function(data, yName) {
 
   #split data into train and cv
   set.seed(837)
-  partitionIndices = caret::createDataPartition(data[[yName]], p=0.8, list=FALSE)
+  partitionIndices = caret::createDataPartition(data[, yName], p=0.8, list=FALSE)
   train = data[partitionIndices,]
   cv = data[-partitionIndices,]
   return(list(train=train, cv=cv))
@@ -23,17 +23,17 @@ computeTrainCVErrors = function(data, yName, xNames, createModel, createPredicti
 
   #compute train and cv errors
   model = createModel(train, yName, xNames)
-  trainError = computeError(train[[yName]], createPrediction(model, train))
-  cvError = computeError(cv[[yName]], createPrediction(model, cv))
+  trainError = computeError(train[, yName], createPrediction(model, train, xNames))
+  cvError = computeError(cv[, yName], createPrediction(model, cv, xNames))
 
   return(list(train=trainError, cv=cvError))
 }
 
-outputSolution = function(createPrediction, model, testData, idName, yName, filename) {
+outputSolution = function(createPrediction, model, testData, idName, yName, xNames, filename) {
   cat('Outputing solution...\n')
   cat('    Creating prediction...\n')
-  prediction = createPrediction(model, testData)
-  solution = data.frame(testData[[idName]], prediction)
+  prediction = createPrediction(model, testData, xNames)
+  solution = data.frame(testData[, idName], prediction)
   colnames(solution) = c(idName, yName)
   cat('    Writing solution to file: ', filename, '...\n', sep='')
   write.csv(solution, file=filename, row.names=F)

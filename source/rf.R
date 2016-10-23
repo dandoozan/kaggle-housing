@@ -36,7 +36,7 @@ createModel = function(data, yName, xNames='.') {
                       ntree=500))
 }
 
-createPrediction = function(model, newData) {
+createPrediction = function(model, newData, xNames=NULL) {
   #'exp' the prediction to convert it back to regular y since I'm using log(y) in the model
   return(exp(predict(model, newData)))
 }
@@ -91,7 +91,7 @@ findBestSetOfFeatures = function(data, possibleFeatures) {
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
 FILENAME = 'rf_logy'
-PROD_RUN = T
+PROD_RUN = F
 PLOT = 'lc' #lc=learning curve, fi=feature importances
 
 data = getData(Y_NAME, oneHotEncode=F)
@@ -117,6 +117,6 @@ cvError = trnCvErrors$cv
 trainError = computeError(train[[Y_NAME]], createPrediction(model, train))
 cat('    Trn/CV, Train: ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
 
-if (PROD_RUN) outputSolution(createPrediction, model, test, ID_NAME, Y_NAME, paste0(FILENAME, '.csv'))
+if (PROD_RUN) outputSolution(createPrediction, model, test, ID_NAME, Y_NAME, featuresToUse, paste0(FILENAME, '.csv'))
 
 cat('Done!\n')

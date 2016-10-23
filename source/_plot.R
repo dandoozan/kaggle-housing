@@ -26,8 +26,8 @@ plotLearningCurve = function(data, yName, xNames, createModel, createPrediction,
     #print(names(Filter(function(x) (is.factor(x) && length(levels(x)) < 2), trainSubset)))
 
     model = createModel(trainSubset, yName, xNames)
-    trainErrors[count] = computeError(trainSubset[[yName]], createPrediction(model, trainSubset))
-    cvErrors[count] = computeError(cv[[yName]], createPrediction(model, cv))
+    trainErrors[count] = computeError(trainSubset[, yName], createPrediction(model, trainSubset, xNames))
+    cvErrors[count] = computeError(cv[, yName], createPrediction(model, cv, xNames))
 
     #tbx
     # if (cvErrors[count] > 0.5 && !found) {

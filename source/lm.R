@@ -47,7 +47,7 @@ createModel = function(data, yName, xNames='.') {
   return(lm(getFormula(yName, xNames), data=data))
 }
 
-createPrediction = function(model, newData, verbose=F) {
+createPrediction = function(model, newData, xNames=NULL, verbose=F) {
   prediction = exp(predict(model, newData, type='response'))
   minY = min(prediction)
   if (minY <= 0) {
@@ -122,7 +122,7 @@ findBestSetOfFeatures = function(data, possibleFeatures, yName, createModel, cre
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
 FILENAME = 'lm_logy'
-PROD_RUN = T
+PROD_RUN = F
 
 data = getData(Y_NAME, oneHotEncode=T)
 train = data$train
@@ -146,6 +146,6 @@ cvError = trnCvErrors$cv
 trainError = computeError(train[[Y_NAME]], createPrediction(model, train, verbose=T))
 cat('    Trn/CV, Train: ', trnError, '/', cvError, ', ', trainError, '\n', sep='')
 
-if (PROD_RUN) outputSolution(createPrediction, model, test, ID_NAME, Y_NAME, paste0(FILENAME, '.csv'))
+if (PROD_RUN) outputSolution(createPrediction, model, test, ID_NAME, Y_NAME, featuresToUse, paste0(FILENAME, '.csv'))
 
 cat('Done!\n')

@@ -7,12 +7,12 @@
 #D-Use caret::dummyVars to one-hot-encode: xgb_dummyVars:
   #NumFeaturesUsed=295/295, 1, 0.008649, 0.146446, 266, 103, 0.008649, 0.146446
   #0.009038904/0.1433992, 0.01297175, 0.14155
-#-Recompute boruta now that im predicting log(y) instead of y
+#-Tune hyperparams (eta=0.01, max_depth=3, min_child_weight=5, subsample=0.6, colsample_bytree=0.6):
+
+#-Tune hyperparams automatically: https://www.kaggle.com/jiashenliu/house-prices-advanced-regression-techniques/updated-xgboost-with-parameter-tuning/run/362252/comments#135758
 #-Tune earlyStopRound in findBestSeedAndNrounds
-#-Tune hyperparams
+#-Recompute boruta now that im predicting log(y) instead of y
 #-Try Boruta features
-#-Read (for finding best params): https://www.kaggle.com/jiashenliu/house-prices-advanced-regression-techniques/updated-xgboost-with-parameter-tuning/run/362252/comments#135758
-#-Try dummyVars fullRank=F
 
 #Remove all objects from the current workspace
 rm(list = ls())
@@ -44,22 +44,22 @@ computeError = function(y, yhat) {
 getHyperParams = function() {
   return(list(
     #range=[0,1], default=0.3, toTry=0.01,0.015,0.025,0.05,0.1
-    #eta = 0.005, #learning rate. Lower value=less overfitting, but increase nrounds when lowering eta
+    eta = 0.01, #learning rate. Lower value=less overfitting, but increase nrounds when lowering eta
 
     #range=[0,∞], default=0, toTry=?
     #gamma = 0, #Larger value=less overfitting
 
     #range=[1,∞], default=6, toTry=3,5,7,9,12,15,17,25
-    #max_depth = 5, #Lower value=less overfitting
+    max_depth = 3, #Lower value=less overfitting
 
     #range=[0,∞], default=1, toTry=1,3,5,7
-    #min_child_weight = 1, #Larger value=less overfitting
+    min_child_weight = 5, #Larger value=less overfitting
 
     #range=(0,1], default=1, toTry=0.6,0.7,0.8,0.9,1.0
-    #subsample = 0.8, #ratio of sample of data to use for each instance (eg. 0.5=50% of data). Lower value=less overfitting
+    subsample = 0.6, #ratio of sample of data to use for each instance (eg. 0.5=50% of data). Lower value=less overfitting
 
     #range=(0,1], default=1, toTry=0.6,0.7,0.8,0.9,1.0
-    #colsample_bytree = 0.6, #ratio of cols (features) to use in each tree. Lower value=less overfitting
+    colsample_bytree = 0.6, #ratio of cols (features) to use in each tree. Lower value=less overfitting
 
     #values=gbtree|gblinear|dart, default=gbtree, toTry=gbtree,gblinear
     #booster = 'gbtree', #gbtree/dart=tree based, gblinear=linear function. Remove eta when using gblinear
@@ -102,12 +102,12 @@ plotFeatureImportances = function(model, xNames, save=FALSE) {
   if (save) dev.off()
 }
 
-findBestSeedAndNrounds = function(data, yName, xNames, earlyStopRound=100, numSeedsToTry=1) {
+findBestSeedAndNrounds = function(data, yName, xNames, earlyStopRound=10, numSeedsToTry=1) {
   cat('Finding best seed and nrounds.  Trying ', numSeedsToTry, ' seeds...\n', sep='')
 
   dataAsDMatrix = getDMatrix(data, yName, xNames)
 
-  initialNrounds = 1000
+  initialNrounds = 10000
   maximize = FALSE
   bestSeed = 1
   bestNrounds = 0
@@ -161,14 +161,37 @@ getDMatrix = function(data, yName, xNames) {
   return(xgb.DMatrix(data=data[, xNames], label=log(data[, yName])))
 }
 
+# tuneHyperParams = function(data, yName, xNames) {
+#   xgbTune = caret::train(
+#     getFormula(yName, xNames),
+#     data=data,
+#     method='xgbTree',
+#     metric = 'RMSE',
+#     trControl=caret::trainControl(
+#       method = 'repeatedcv',
+#       repeats = 1,
+#       number = 5
+#     ),
+#     tuneGrid=expand.grid(
+#       nrounds = 100,
+#       max_depth = 6,
+#       eta = 0.3,
+#       gamma = 0,
+#       colsample_bytree = 1,
+#       min_child_weight = 1
+#     )
+#   )
+#   return(xgbTune)
+# }
+
 #============= Main ================
 
 #Globals
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
-FILENAME = 'xgb_dummyVars'
-PROD_RUN = F
-PLOT = '' #cv=cv errors, lc=learning curve, fi=feature importances
+FILENAME = 'xgb_tune'
+PROD_RUN = T
+PLOT = 'lc' #cv=cv errors, lc=learning curve, fi=feature importances
 
 data = getData(Y_NAME, oneHotEncode=T)
 #convert to matrix b/c xgb.train requires a matrix to be passed to it
@@ -181,7 +204,7 @@ possibleFeatures = setdiff(colnames(train), c(ID_NAME, Y_NAME))
 featuresToUse = findBestSetOfFeatures(train, possibleFeatures)
 
 #find best seed and nrounds
-sn = findBestSeedAndNrounds(train, Y_NAME, featuresToUse, numSeedsToTry=1)
+sn = findBestSeedAndNrounds(train, Y_NAME, featuresToUse)
 SEED = sn$seed
 NROUNDS = sn$nrounds
 
@@ -191,7 +214,7 @@ model = createModel(train, Y_NAME, featuresToUse)
 
 #plots
 if (PROD_RUN || PLOT=='cv') plotCVErrorRates(train, Y_NAME, featuresToUse, ylim=c(0, 0.2), save=PROD_RUN)
-if (PROD_RUN || PLOT=='lc') plotLearningCurve(train, Y_NAME, featuresToUse, createModel, createPrediction, computeError, save=PROD_RUN)
+if (PROD_RUN || PLOT=='lc') plotLearningCurve(train, Y_NAME, featuresToUse, createModel, createPrediction, computeError, increment=50, ylim=c(0, 0.3), save=PROD_RUN)
 if (PROD_RUN || PLOT=='fi') plotFeatureImportances(model, featuresToUse, save=PROD_RUN)
 
 #print trn/cv, train error

@@ -7,10 +7,10 @@
 #D-Use caret::dummyVars to one-hot-encode: xgb_dummyVars:
   #NumFeaturesUsed=295/295, 1, 0.008649, 0.146446, 266, 103, 0.008649, 0.146446
   #0.009038904/0.1433992, 0.01297175, 0.14155
-#-Tune hyperparams (eta=0.01, max_depth=3, min_child_weight=5, subsample=0.6, colsample_bytree=0.6):
-
-#-Tune hyperparams automatically: https://www.kaggle.com/jiashenliu/house-prices-advanced-regression-techniques/updated-xgboost-with-parameter-tuning/run/362252/comments#135758
-#-Tune earlyStopRound in findBestSeedAndNrounds
+#D-Tune hyperparams (eta=0.01, max_depth=3, min_child_weight=5, subsample=0.6, colsample_bytree=0.6): xgb_tune:
+  #295, 1, 0.083776, 0.132163, 266, 1451, 0.083776, 0.132163
+  #0.08536821/0.1179355, 0.08795907, 0.13777 <-- New best
+#D-Tune hyperparams automatically (I did, but the auto doesn't take subsample, and it can't use earlyStopRounds, so it takes forever and doesn't even give definitive results at the end anyway.  I think my manual does just as well in less time actually)
 #-Recompute boruta now that im predicting log(y) instead of y
 #-Try Boruta features
 
@@ -43,6 +43,12 @@ computeError = function(y, yhat) {
 }
 getHyperParams = function() {
   return(list(
+    #values=gbtree|gblinear|dart, default=gbtree, toTry=gbtree,gblinear
+    booster = 'gbtree', #gbtree/dart=tree based, gblinear=linear function. Remove eta when using gblinear
+
+    #range=(0,1], default=1, toTry=0.6,0.7,0.8,0.9,1.0
+    colsample_bytree = 0.6, #ratio of cols (features) to use in each tree. Lower value=less overfitting
+
     #range=[0,1], default=0.3, toTry=0.01,0.015,0.025,0.05,0.1
     eta = 0.01, #learning rate. Lower value=less overfitting, but increase nrounds when lowering eta
 
@@ -57,12 +63,6 @@ getHyperParams = function() {
 
     #range=(0,1], default=1, toTry=0.6,0.7,0.8,0.9,1.0
     subsample = 0.6, #ratio of sample of data to use for each instance (eg. 0.5=50% of data). Lower value=less overfitting
-
-    #range=(0,1], default=1, toTry=0.6,0.7,0.8,0.9,1.0
-    colsample_bytree = 0.6, #ratio of cols (features) to use in each tree. Lower value=less overfitting
-
-    #values=gbtree|gblinear|dart, default=gbtree, toTry=gbtree,gblinear
-    #booster = 'gbtree', #gbtree/dart=tree based, gblinear=linear function. Remove eta when using gblinear
 
     objective = 'reg:linear'
   ))
@@ -161,28 +161,30 @@ getDMatrix = function(data, yName, xNames) {
   return(xgb.DMatrix(data=data[, xNames], label=log(data[, yName])))
 }
 
-# tuneHyperParams = function(data, yName, xNames) {
-#   xgbTune = caret::train(
-#     getFormula(yName, xNames),
-#     data=data,
-#     method='xgbTree',
-#     metric = 'RMSE',
-#     trControl=caret::trainControl(
-#       method = 'repeatedcv',
-#       repeats = 1,
-#       number = 5
-#     ),
-#     tuneGrid=expand.grid(
-#       nrounds = 100,
-#       max_depth = 6,
-#       eta = 0.3,
-#       gamma = 0,
-#       colsample_bytree = 1,
-#       min_child_weight = 1
-#     )
-#   )
-#   return(xgbTune)
-# }
+#This function is to used standalone.  Be careful because it takes forever to run if you have too many options
+#Eg. a=tuneHyperParams(train, Y_NAME, featuresToUse, nrounds=1000, eta=c(0.01, 0.05, 0.1, 0.3), max_depth=c(3,5,7), min_child_weight=c(1,3,5,7), colsample_bytree=c(0.6, 0.8, 1))
+tuneHyperParams = function(data, yName, xNames, nrounds=500, colsample_bytree=1, eta=0.3, gamma=0, max_depth=6, min_child_weight=1) {
+  xgbTune = caret::train(
+    getFormula(yName, xNames),
+    data=data,
+    method='xgbTree',
+    metric = 'RMSE',
+    trControl=caret::trainControl(
+      method = 'repeatedcv',
+      repeats = 1,
+      number = 5
+    ),
+    tuneGrid=expand.grid(
+      nrounds = nrounds,
+      max_depth = max_depth,
+      eta = eta,
+      gamma = gamma,
+      colsample_bytree = colsample_bytree,
+      min_child_weight = min_child_weight
+    )
+  )
+  return(xgbTune)
+}
 
 #============= Main ================
 
@@ -190,8 +192,8 @@ getDMatrix = function(data, yName, xNames) {
 ID_NAME = 'Id'
 Y_NAME = 'SalePrice'
 FILENAME = 'xgb_tune'
-PROD_RUN = T
-PLOT = 'lc' #cv=cv errors, lc=learning curve, fi=feature importances
+PROD_RUN = F
+PLOT = '' #cv=cv errors, lc=learning curve, fi=feature importances
 
 data = getData(Y_NAME, oneHotEncode=T)
 #convert to matrix b/c xgb.train requires a matrix to be passed to it

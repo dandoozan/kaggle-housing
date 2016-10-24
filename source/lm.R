@@ -29,13 +29,13 @@
 
 #Remove all objects from the current workspace
 rm(list = ls())
-setwd('/Users/dan/Desktop/Kaggle/Housing')
+setwd('/Users/dan/Desktop/ML/kaggle-housing')
 
 
 library(hydroGOF) #rmse
 source('source/_getData.R')
-source('source/_plot.R')
-source('source/_util.R')
+source('../ml-common/plot.R')
+source('../ml-common/util.R')
 
 
 #============== Functions ===============

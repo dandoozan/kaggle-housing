@@ -13,15 +13,15 @@
 
 #Remove all objects from the current workspace
 rm(list = ls())
-setwd('/Users/dan/Desktop/Kaggle/Housing')
+setwd('/Users/dan/Desktop/ML/kaggle-housing')
 
 library(randomForest) #randomForest
 library(hydroGOF) #rmse
 library(ggplot2) #visualization
 library(ggthemes) # visualization
 source('source/_getData.R')
-source('source/_plot.R')
-source('source/_util.R')
+source('../ml-common/plot.R')
+source('../ml-common/util.R')
 
 #============== Functions ===============
 

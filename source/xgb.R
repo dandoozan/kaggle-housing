@@ -16,15 +16,15 @@
 
 #Remove all objects from the current workspace
 rm(list = ls())
-setwd('/Users/dan/Desktop/Kaggle/Housing')
+setwd('/Users/dan/Desktop/ML/kaggle-housing')
 
 library(xgboost) #xgb.train, xgb.cv
 library(caret) #dummyVars
 library(Ckmeans.1d.dp) #xgb.plot.importance
 library(hydroGOF) #rmse
 source('source/_getData.R')
-source('source/_plot.R')
-source('source/_util.R')
+source('../ml-common/plot.R')
+source('../ml-common/util.R')
 
 #================= Functions ===================
 
